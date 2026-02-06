@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The Best Day Countdown</title>
+    <style>
+        body { background: #fff5e6; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: #d97706; }
+        .container { text-align: center; background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border-top: 5px solid #d97706; }
+        .metric { margin: 20px 0; border-bottom: 1px solid #fef3c7; padding-bottom: 10px; }
+        .label { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #92400e; }
+        .time { font-family: 'Courier New', Courier, monospace; font-size: 2rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="metric">
+            <div class="label">🕓 Work Hours Left</div>
+            <div id="work-time" class="time">00:00:00:00</div>
+        </div>
+        <div class="metric">
+            <div class="label">🕓 Awake Hours</div>
+            <div id="awake-time" class="time">00:00:00:00</div>
+        </div>
+        <div class="metric">
+            <div class="label">🕓 Total Hours</div>
+            <div id="total-time" class="time">00:00:00:00</div>
+        </div>
+    </div>
+
+    <script>
+        const targetDate = new Date("February 26, 2026 09:30:00");
+
+        function update() {
+            const now = new Date();
+            const diff = targetDate - now;
+
+            if (diff <= 0) {
+                document.body.innerHTML = "<h1>The Best Day is here!</h1>";
+                return;
+            }
+
+            // TOTAL TIME
+            const totalSecs = Math.floor(diff / 1000);
+            const tH = Math.floor(totalSecs / 3600);
+            const tM = Math.floor((totalSecs % 3600) / 60);
+            const tS = totalSecs % 60;
+            document.getElementById('total-time').innerText = `${tH}h ${tM}m ${tS}s`;
+
+            // AWAKE TIME (Subtracting 8 hours per night)
+            const daysLeft = diff / (1000 * 60 * 60 * 24);
+            const awakeDiff = diff - (Math.floor(daysLeft) * 8 * 60 * 60 * 1000);
+            const aH = Math.floor(awakeDiff / (1000 * 60 * 60));
+            const aM = Math.floor((awakeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const aS = Math.floor((awakeDiff % (1000 * 60)) / 1000);
+            document.getElementById('awake-time').innerText = `${aH}h ${aM}m ${aS}s`;
+
+            // WORK TIME (Simplified: 8 hours per weekday remaining)
+            // Note: This is a basic web version of your NETWORKDAYS logic
+            let workHours = 0;
+            let tempDate = new Date(now);
+            while (tempDate < targetDate) {
+                if (tempDate.getDay() !== 0 && tempDate.getDay() !== 6) {
+                    // Very basic check: adds 8 hours for every weekday
+                    workHours += 8 / 24; 
+                }
+                tempDate.setDate(tempDate.getDate() + 1);
+            }
+            const wH = Math.floor(workHours * 24);
+            document.getElementById('work-time').innerText = `${wH}h 00m 00s`;
+        }
+
+        setInterval(update, 1000);
+        update();
+    </script>
+</body>
+</html>
