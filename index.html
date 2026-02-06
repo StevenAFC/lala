@@ -8,7 +8,7 @@
     <style>
         :root {
             --bg-gradient: linear-gradient(-45deg, #FF6B6B, #556270, #4ECDC4, #C7F464);
-            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-bg: rgba(255, 255, 255, 0.9); /* Slightly more opaque */
             --glass-border: rgba(255, 255, 255, 0.4);
             --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
             --text-color: #2d3748;
@@ -30,8 +30,10 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 0px;
+            padding: 10px; /* Minimal padding to prevent edge touching */
+            box-sizing: border-box;
             color: var(--text-color);
+            overflow: hidden; /* Try to force no scroll */
         }
 
         @keyframes gradientBG {
@@ -47,28 +49,31 @@
             border: 1px solid white;
             width: 100%;
             max-width: 950px;
-            padding: 40px;
-            border-radius: 24px;
+            padding: 25px 30px; /* Reduced vertical padding */
+            border-radius: 20px;
             box-shadow: var(--glass-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Consistent spacing between all sections */
         }
 
         /* --- Progress Bars --- */
+        .bar-group { margin-bottom: 5px; }
         .bar-label { 
             font-weight: 800; 
-            margin-bottom: 8px; 
+            margin-bottom: 5px; 
             display: flex; 
             justify-content: space-between; 
-            font-size: 0.9rem; 
+            font-size: 0.8rem; 
             letter-spacing: 0.5px;
             text-transform: uppercase;
             color: #4a5568;
         }
         .progress-container {
-            height: 20px;
+            height: 16px; /* Slimmer bars */
             background: rgba(255,255,255,0.6);
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
-            margin-bottom: 25px;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
             border: 1px solid rgba(200,200,200,0.5);
         }
@@ -76,8 +81,8 @@
             height: 100%;
             width: 0%;
             transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
-            border-radius: 10px;
-            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
         }
         #day-bar { background: var(--bar-day-color); }
         #time-bar { background: var(--bar-time-color); }
@@ -86,21 +91,20 @@
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            margin-bottom: 25px;
+            gap: 6px;
         }
         .cal-header {
             text-align: center;
             font-weight: 800;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #718096;
-            padding-bottom: 5px;
+            padding-bottom: 2px;
         }
         
         .cal-cell {
             background: white;
-            height: 55px;
-            border-radius: 12px;
+            height: 45px; /* Reduced height significantly */
+            border-radius: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -122,28 +126,35 @@
         
         .cal-cell.past { 
             background: linear-gradient(135deg, var(--pop-green-start), var(--pop-green-end));
-            color: #004d00;
+            color: white;
             border: 1px solid rgba(255,255,255,0.8);
-            animation: deepBreathing 3s infinite ease-in-out;
+            /* New Wiggle Animation */
+            animation: softWiggle 3s infinite ease-in-out;
             z-index: 1; 
+        }
+
+        .check-mark {
+            font-size: 1.4rem;
+            font-weight: 900;
+            line-height: 1;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         /* --- Split Timer --- */
         .timer-container {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 12px;
         }
 
         .timer-pill {
             background: #1a202c;
             color: #fff;
-            padding: 15px;
-            border-radius: 16px;
+            padding: 10px; /* Reduced padding */
+            border-radius: 14px;
             text-align: center;
             border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 15px -5px rgba(0,0,0,0.2);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -151,17 +162,17 @@
         }
 
         .timer-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             opacity: 0.7;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
         }
 
         .timer-value {
             font-family: 'Courier New', Courier, monospace;
             font-weight: 700;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             letter-spacing: -1px;
         }
 
@@ -172,20 +183,19 @@
         /* --- Stats Grid (2x2 Layout) --- */
         .stats-grid { 
             display: grid; 
-            grid-template-columns: 1fr 1fr; /* Two equal columns */
-            gap: 15px; 
-            margin-bottom: 10px; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
         }
         .stat-card {
             padding: 12px;
-            border-radius: 16px;
+            border-radius: 14px;
             text-align: center;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.95rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255,255,255,0.6);
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
@@ -193,61 +203,71 @@
         }
         .stat-card:hover { transform: translateY(-3px) scale(1.02); }
 
-        .stat-blue { background: linear-gradient(135deg, rgba(227, 242, 253, 0.8), rgba(187, 222, 251, 0.9)); color: #0d47a1; }
-        .stat-green { background: linear-gradient(135deg, rgba(232, 245, 233, 0.8), rgba(200, 230, 201, 0.9)); color: #1b5e20; }
-        .stat-gold { background: linear-gradient(135deg, rgba(255, 248, 225, 0.8), rgba(255, 236, 179, 0.9)); color: #f57f17; }
-        .stat-red { background: linear-gradient(135deg, rgba(255, 235, 238, 0.9), rgba(255, 205, 210, 1)); color: #b71c1c; border: 1px solid #ef9a9a; }
+        .stat-blue { background: linear-gradient(135deg, rgba(227, 242, 253, 0.9), rgba(187, 222, 251, 0.95)); color: #0d47a1; }
+        .stat-green { background: linear-gradient(135deg, rgba(232, 245, 233, 0.9), rgba(200, 230, 201, 0.95)); color: #1b5e20; }
+        .stat-gold { background: linear-gradient(135deg, rgba(255, 248, 225, 0.9), rgba(255, 236, 179, 0.95)); color: #f57f17; }
+        .stat-red { background: linear-gradient(135deg, rgba(255, 235, 238, 0.95), rgba(255, 205, 210, 1)); color: #b71c1c; border: 1px solid #ef9a9a; }
 
         /* --- Animations --- */
-        @keyframes deepBreathing {
-            0% { transform: scale(0.98); filter: brightness(1); box-shadow: 0 0 5px var(--pop-green-start); }
-            50% { transform: scale(1.03); filter: brightness(1.15); box-shadow: 0 0 20px var(--pop-green-start); }
-            100% { transform: scale(0.98); filter: brightness(1); box-shadow: 0 0 5px var(--pop-green-start); }
+        @keyframes softWiggle {
+            0%, 100% { transform: rotate(0deg); }
+            2% { transform: rotate(-3deg); }
+            4% { transform: rotate(3deg); }
+            6% { transform: rotate(-3deg); }
+            8% { transform: rotate(3deg); }
+            10% { transform: rotate(0deg); }
         }
+
         @keyframes todayPulse {
             0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246, 173, 85, 0.7); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(246, 173, 85, 0); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(246, 173, 85, 0); }
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246, 173, 85, 0); }
         }
         .cal-cell.today { background: white; border: 3px solid var(--best-day-gold); z-index: 2; animation: todayPulse 2s infinite; }
         .cal-cell.arsenal { background: #fc8181; color: white; }
         
-        .date-num { font-size: 0.85rem; font-weight: bold; }
-        .status-icon { font-size: 1.2rem; margin-top: 2px; }
+        .date-num { font-size: 0.8rem; font-weight: bold; }
+        .status-icon { font-size: 1.1rem; margin-top: 1px; }
 
         /* --- Mobile --- */
         @media (max-width: 650px) {
-            .dashboard { padding: 10px; }
-            .stats-grid { grid-template-columns: 1fr; } /* Stack vertically on phone */
+            body { overflow: auto; height: auto; display: block; }
+            .dashboard { padding: 15px; height: auto; }
+            .stats-grid { grid-template-columns: 1fr; } 
             .timer-container { grid-template-columns: 1fr; gap: 10px; }
             .timer-value { font-size: 1.8rem; }
-            .cal-cell { height: 50px; }
+            .cal-cell { height: 45px; }
         }
     </style>
 </head>
 <body>
 
 <div class="dashboard">
-    <div class="bar-label">
-        <span>Day Progress</span>
-        <span id="day-percent">0%</span>
-    </div>
-    <div class="progress-container">
-        <div id="day-bar" class="progress-fill"></div>
-    </div>
+    <div>
+        <div class="bar-group">
+            <div class="bar-label">
+                <span>Day Progress</span>
+                <span id="day-percent">0%</span>
+            </div>
+            <div class="progress-container">
+                <div id="day-bar" class="progress-fill"></div>
+            </div>
+        </div>
 
-    <div class="bar-label">
-        <span>Time Progress</span>
-        <span id="time-percent">0%</span>
-    </div>
-    <div class="progress-container">
-        <div id="time-bar" class="progress-fill"></div>
+        <div class="bar-group">
+            <div class="bar-label">
+                <span>Time Progress</span>
+                <span id="time-percent">0%</span>
+            </div>
+            <div class="progress-container">
+                <div id="time-bar" class="progress-fill"></div>
+            </div>
+        </div>
     </div>
 
     <div class="calendar-grid" id="calendar"></div>
 
-    <div class="timer-container" id="main-timer">
-        </div>
+    <div class="timer-container" id="main-timer"></div>
 
     <div class="stats-grid">
         <div class="stat-card stat-blue" id="stat-sleeps">Loading...</div>
@@ -313,7 +333,7 @@
             if(d.getDay() === 6) sats++;
             d.setDate(d.getDate() + 1);
         }
-        document.getElementById('stat-weekends').innerHTML = `<span style="font-size:1.5rem">📅</span> <span>${thurs} Thursdays & ${sats} Weekends</span>`;
+        document.getElementById('stat-weekends').innerHTML = `<span style="font-size:1.5rem">📅</span> <span>${thurs} Thu & ${sats} Wknds</span>`;
 
         const milestones = [{p:0,t:"Started"},{p:25,t:"Quarter Way"},{p:33,t:"Third Way"},{p:50,t:"Midpoint"},{p:75,t:"Home Stretch"},{p:90,t:"Almost There"},{p:100,t:"Complete"}];
         let mileText = milestones[0].t;
@@ -412,7 +432,7 @@
 
             if(isPast) { 
                 el.classList.add('past'); 
-                el.innerHTML = `<span class="status-icon" style="font-size: 1.5rem; color: #004d00;">✅</span>`; 
+                el.innerHTML = `<span class="check-mark">✔</span>`; 
             } else if(isToday) { 
                 el.classList.add('today'); 
                 el.innerHTML = `<span class="date-num">${cur.getDate()}</span><span class="status-icon">🚀</span>`; 
@@ -437,4 +457,3 @@
 
 </body>
 </html>
-
