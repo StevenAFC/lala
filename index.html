@@ -333,7 +333,7 @@
             if(d.getDay() === 6) sats++;
             d.setDate(d.getDate() + 1);
         }
-        document.getElementById('stat-weekends').innerHTML = `<span style="font-size:1.5rem">📅</span> <span>${thurs} Thu & ${sats} Wknds</span>`;
+        document.getElementById('stat-weekends').innerHTML = `<span style="font-size:1.5rem">📅</span> <span>${thurs} Thursday(s) & ${sats} Weekend(s)</span>`;
 
         const milestones = [{p:0,t:"Started"},{p:25,t:"Quarter Way"},{p:33,t:"Third Way"},{p:50,t:"Midpoint"},{p:75,t:"Home Stretch"},{p:90,t:"Almost There"},{p:100,t:"Complete"}];
         let mileText = milestones[0].t;
@@ -457,3 +457,4 @@
 
 </body>
 </html>
+
