@@ -30,7 +30,7 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 0px;
             color: var(--text-color);
         }
 
@@ -87,7 +87,7 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 8px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         .cal-header {
             text-align: center;
@@ -99,7 +99,7 @@
         
         .cal-cell {
             background: white;
-            height: 65px;
+            height: 55px;
             border-radius: 12px;
             display: flex;
             flex-direction: column;
@@ -177,7 +177,7 @@
             margin-bottom: 10px; 
         }
         .stat-card {
-            padding: 15px;
+            padding: 12px;
             border-radius: 16px;
             text-align: center;
             font-weight: 700;
@@ -217,7 +217,7 @@
 
         /* --- Mobile --- */
         @media (max-width: 650px) {
-            .dashboard { padding: 20px; }
+            .dashboard { padding: 10px; }
             .stats-grid { grid-template-columns: 1fr; } /* Stack vertically on phone */
             .timer-container { grid-template-columns: 1fr; gap: 10px; }
             .timer-value { font-size: 1.8rem; }
