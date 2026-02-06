@@ -2,27 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Best Day Eva Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Day Eva</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            /* Deeper, richer background gradient */
             --bg-gradient: linear-gradient(-45deg, #FF6B6B, #556270, #4ECDC4, #C7F464);
-            
-            /* Glassmorphism Constants */
-            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-bg: rgba(255, 255, 255, 0.85);
             --glass-border: rgba(255, 255, 255, 0.4);
             --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-            
-            /* Text & Colors */
             --text-color: #2d3748;
-            --weekend-blue: #c3dafe;
+            --weekend-color: #cbd5e0;
             --best-day-gold: #f6ad55;
-            
-            /* The "Pop" Green */
             --pop-green-start: #00ff87;
             --pop-green-end: #60efff;
-            
-            /* Bar Gradients */
             --bar-day-color: linear-gradient(90deg, #2c3e50 0%, #4ca1af 100%);
             --bar-time-color: linear-gradient(90deg, #FF8008 0%, #FFC837 100%);
         }
@@ -48,7 +41,7 @@
         }
 
         .dashboard {
-            background: rgba(255, 255, 255, 0.75); /* Slightly more opaque for readability */
+            background: var(--glass-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid white;
@@ -65,25 +58,25 @@
             margin-bottom: 8px; 
             display: flex; 
             justify-content: space-between; 
-            font-size: 1rem; 
+            font-size: 0.9rem; 
             letter-spacing: 0.5px;
             text-transform: uppercase;
             color: #4a5568;
         }
         .progress-container {
-            height: 24px;
+            height: 20px;
             background: rgba(255,255,255,0.6);
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
-            border: 1px solid rgba(255,255,255,0.8);
+            border: 1px solid rgba(200,200,200,0.5);
         }
         .progress-fill {
             height: 100%;
             width: 0%;
             transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
-            border-radius: 12px;
+            border-radius: 10px;
             box-shadow: 2px 0 15px rgba(0,0,0,0.1);
         }
         #day-bar { background: var(--bar-day-color); }
@@ -94,19 +87,19 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 8px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
         .cal-header {
             text-align: center;
             font-weight: 800;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #718096;
             padding-bottom: 5px;
         }
         
         .cal-cell {
-            background: rgba(255,255,255,0.5);
-            height: 70px;
+            background: white;
+            height: 65px;
             border-radius: 12px;
             display: flex;
             flex-direction: column;
@@ -114,128 +107,129 @@
             justify-content: center;
             position: relative;
             cursor: default;
-            border: 1px solid rgba(255,255,255,0.6);
+            border: 1px solid rgba(0,0,0,0.05);
             transition: transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
         
-        .cal-cell.weekend { background: #ebf8ff; border-color: #bee3f8; }
+        .cal-cell.weekend { 
+            background: var(--weekend-color); 
+            border-color: #a0aec0;
+            opacity: 0.8;
+        }
+        
         .cal-cell.empty { background: transparent; border: none; box-shadow: none; }
-
-        /* --- NEW: INTENSE BREATHING GREEN --- */
+        
         .cal-cell.past { 
             background: linear-gradient(135deg, var(--pop-green-start), var(--pop-green-end));
             color: #004d00;
             border: 1px solid rgba(255,255,255,0.8);
-            /* Updated Animation: Scale + Brightness */
             animation: deepBreathing 3s infinite ease-in-out;
             z-index: 1; 
         }
 
-        /* --- NEW: STATS CARDS REDESIGN --- */
+        /* --- Split Timer --- */
+        .timer-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .timer-pill {
+            background: #1a202c;
+            color: #fff;
+            padding: 15px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .timer-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .timer-value {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: -1px;
+        }
+
+        .pill-work .timer-value { color: #f6ad55; text-shadow: 0 0 10px rgba(246, 173, 85, 0.5); }
+        .pill-awake .timer-value { color: #63b3ed; }
+        .pill-total .timer-value { color: #e2e8f0; }
+
+        /* --- Stats Grid (2x2 Layout) --- */
         .stats-grid { 
             display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 20px; 
-            margin-bottom: 40px; 
+            grid-template-columns: 1fr 1fr; /* Two equal columns */
+            gap: 15px; 
+            margin-bottom: 10px; 
         }
-        
         .stat-card {
-            padding: 20px;
+            padding: 15px;
             border-radius: 16px;
             text-align: center;
             font-weight: 700;
-            font-size: 1.05rem;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            
-            /* Glassy Look */
+            gap: 10px;
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255,255,255,0.6);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.4);
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
-            cursor: default;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
         }
+        .stat-card:hover { transform: translateY(-3px) scale(1.02); }
 
-        .stat-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-            z-index: 10;
-        }
+        .stat-blue { background: linear-gradient(135deg, rgba(227, 242, 253, 0.8), rgba(187, 222, 251, 0.9)); color: #0d47a1; }
+        .stat-green { background: linear-gradient(135deg, rgba(232, 245, 233, 0.8), rgba(200, 230, 201, 0.9)); color: #1b5e20; }
+        .stat-gold { background: linear-gradient(135deg, rgba(255, 248, 225, 0.8), rgba(255, 236, 179, 0.9)); color: #f57f17; }
+        .stat-red { background: linear-gradient(135deg, rgba(255, 235, 238, 0.9), rgba(255, 205, 210, 1)); color: #b71c1c; border: 1px solid #ef9a9a; }
 
-        /* Specific Colors for Stats */
-        .stat-blue { 
-            background: linear-gradient(135deg, rgba(227, 242, 253, 0.6), rgba(187, 222, 251, 0.8)); 
-            color: #0d47a1; 
-        }
-        .stat-green { 
-            background: linear-gradient(135deg, rgba(232, 245, 233, 0.6), rgba(200, 230, 201, 0.8)); 
-            color: #1b5e20; 
-        }
-        .stat-gold { 
-            background: linear-gradient(135deg, rgba(255, 248, 225, 0.6), rgba(255, 236, 179, 0.8)); 
-            color: #f57f17; 
-        }
-        .stat-red { 
-            background: linear-gradient(135deg, rgba(255, 235, 238, 0.8), rgba(255, 205, 210, 0.9)); 
-            color: #b71c1c; 
-            border: 1px solid #ef9a9a;
-        }
-
-        /* --- Footer Countdown --- */
-        .footer-countdown {
-            background: #1a202c;
-            color: #fff;
-            text-align: center;
-            padding: 25px;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: 700;
-            font-size: 1.25rem;
-            border-radius: 16px;
-            letter-spacing: 0px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .footer-highlight { color: #f6e05e; }
-
-        /* --- ANIMATIONS --- */
+        /* --- Animations --- */
         @keyframes deepBreathing {
             0% { transform: scale(0.98); filter: brightness(1); box-shadow: 0 0 5px var(--pop-green-start); }
             50% { transform: scale(1.03); filter: brightness(1.15); box-shadow: 0 0 20px var(--pop-green-start); }
             100% { transform: scale(0.98); filter: brightness(1); box-shadow: 0 0 5px var(--pop-green-start); }
         }
-
         @keyframes todayPulse {
             0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246, 173, 85, 0.7); }
             70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(246, 173, 85, 0); }
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246, 173, 85, 0); }
         }
+        .cal-cell.today { background: white; border: 3px solid var(--best-day-gold); z-index: 2; animation: todayPulse 2s infinite; }
+        .cal-cell.arsenal { background: #fc8181; color: white; }
         
-        .cal-cell.today { 
-            background: white; 
-            border: 3px solid var(--best-day-gold); 
-            z-index: 2;
-            animation: todayPulse 2s infinite;
-        }
-        
-        .cal-cell.arsenal {
-            background: #fc8181;
-            color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        
-        .date-num { font-size: 0.9rem; font-weight: bold; }
-        .status-icon { font-size: 1.4rem; margin-top: 2px; }
+        .date-num { font-size: 0.85rem; font-weight: bold; }
+        .status-icon { font-size: 1.2rem; margin-top: 2px; }
 
+        /* --- Mobile --- */
+        @media (max-width: 650px) {
+            .dashboard { padding: 20px; }
+            .stats-grid { grid-template-columns: 1fr; } /* Stack vertically on phone */
+            .timer-container { grid-template-columns: 1fr; gap: 10px; }
+            .timer-value { font-size: 1.8rem; }
+            .cal-cell { height: 50px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="dashboard">
     <div class="bar-label">
-        <span>Day Progress (Total Days)</span>
+        <span>Day Progress</span>
         <span id="day-percent">0%</span>
     </div>
     <div class="progress-container">
@@ -243,7 +237,7 @@
     </div>
 
     <div class="bar-label">
-        <span>Time Progress (Precise)</span>
+        <span>Time Progress</span>
         <span id="time-percent">0%</span>
     </div>
     <div class="progress-container">
@@ -251,43 +245,51 @@
     </div>
 
     <div class="calendar-grid" id="calendar"></div>
-    <div class="footer-countdown" id="main-timer">Initializing...</div>
+
+    <div class="timer-container" id="main-timer">
+        </div>
 
     <div class="stats-grid">
         <div class="stat-card stat-blue" id="stat-sleeps">Loading...</div>
         <div class="stat-card stat-green" id="stat-weekends">Loading...</div>
-        <div class="stat-card stat-gold" id="stat-milestone" style="grid-column: span 2;">Loading...</div>
-        <div class="stat-card stat-red" id="stat-arsenal" style="grid-column: span 2;">Loading...</div>
+        <div class="stat-card stat-gold" id="stat-milestone">Loading...</div>
+        <div class="stat-card stat-red" id="stat-arsenal">Loading...</div>
     </div>
-
 </div>
 
 <script>
-    // --- SETTINGS ---
     const START_DATE = new Date("2026-01-29T00:00:00");
     const TARGET_DATE_MATH = new Date("2026-02-26T00:00:00"); 
     const TARGET_DATE_EXACT = new Date("2026-02-26T09:30:00"); 
-    
     const ARSENAL_GAMES = [
         new Date(2026, 1, 7), new Date(2026, 1, 12), 
         new Date(2026, 1, 15), new Date(2026, 1, 18), new Date(2026, 1, 22)
     ];
+
+    let confettiLaunched = false;
 
     function update() {
         const now = new Date();
         const diffMs = TARGET_DATE_EXACT - now;
 
         if(diffMs <= 0) {
-            document.getElementById('main-timer').innerText = "🚀 BEST DAY EVA IS HERE! 🚀";
+            document.getElementById('main-timer').innerHTML = 
+                `<div class="timer-pill pill-work" style="grid-column: span 3;">
+                    <div class="timer-value">🚀 IT'S TIME!</div>
+                 </div>`;
+            document.title = "🎉 IT'S TIME! 🎉";
+            if(!confettiLaunched) {
+                launchConfetti();
+                confettiLaunched = true;
+            }
             return;
         }
 
-        // --- 1. Progress Bars ---
+        // --- Bars ---
         const totalDurationMs = TARGET_DATE_EXACT - START_DATE;
         const elapsedMs = now - START_DATE;
         const timePct = Math.min(100, Math.max(0, (elapsedMs / totalDurationMs) * 100));
         
-        // Day Progress (Strict Integer Match)
         const nowMidnight = new Date(now); nowMidnight.setHours(0,0,0,0);
         const totalDays = Math.round((TARGET_DATE_MATH - START_DATE) / (1000 * 60 * 60 * 24));
         const daysPassed = Math.round((nowMidnight - START_DATE) / (1000 * 60 * 60 * 24));
@@ -298,10 +300,11 @@
         document.getElementById('day-bar').style.width = dayPct + "%";
         document.getElementById('day-percent').innerText = dayPct.toFixed(2) + "%";
 
-        // --- 2. Stats ---
+        // --- Stats ---
         const sleeps = Math.ceil(diffMs / (1000*60*60*24));
         const mood = sleeps > 20 ? "😭" : (sleeps > 10 ? "😐" : "🥳");
-        document.getElementById('stat-sleeps').innerHTML = `<span style="font-size:1.5rem">${mood}</span> <span>${sleeps} sleeps remaining!</span>`;
+        document.title = `(${sleeps} Sleeps) Best Day Countdown`;
+        document.getElementById('stat-sleeps').innerHTML = `<span style="font-size:1.5rem">${mood}</span> <span>${sleeps} sleeps left!</span>`;
 
         let d = new Date(now);
         let thurs = 0, sats = 0;
@@ -310,9 +313,9 @@
             if(d.getDay() === 6) sats++;
             d.setDate(d.getDate() + 1);
         }
-        document.getElementById('stat-weekends').innerHTML = `<span style="font-size:1.5rem">📅</span> <span>${thurs} Thursdays & ${sats} Weekends left!</span>`;
+        document.getElementById('stat-weekends').innerHTML = `<span style="font-size:1.5rem">📅</span> <span>${thurs} Thu & ${sats} Wknds</span>`;
 
-        const milestones = [{p:0,t:"Started"},{p:25,t:"Quarter Way Through"},{p:33,t:"Third Way Through"},{p:50,t:"Midpoint Reached"},{p:75,t:"Three Quarters Milestone Reached"},{p:90,t:"Almost Complete"},{p:100,t:"100% Complete"}];
+        const milestones = [{p:0,t:"Started"},{p:25,t:"Quarter Way"},{p:33,t:"Third Way"},{p:50,t:"Midpoint"},{p:75,t:"Home Stretch"},{p:90,t:"Almost There"},{p:100,t:"Complete"}];
         let mileText = milestones[0].t;
         milestones.forEach(m => { if(timePct >= m.p) mileText = m.t; });
         document.getElementById('stat-milestone').innerHTML = `<span style="font-size:1.5rem">📈</span> <span>${mileText}</span>`;
@@ -321,10 +324,9 @@
             let gEnd = new Date(g); gEnd.setHours(23,59,59);
             return gEnd > now;
         }).length;
-        document.getElementById('stat-arsenal').innerHTML = `<span style="font-size:1.5rem">⚽</span> <span>${gamesLeft} Arsenal games remaining!</span>`;
+        document.getElementById('stat-arsenal').innerHTML = `<span style="font-size:1.5rem">⚽</span> <span>${gamesLeft} Arsenal games!</span>`;
 
-
-        // --- 3. Footer Timer ---
+        // --- Timer ---
         const tTotal = msToTime(diffMs);
         const nightsLeft = Math.floor(diffMs / (1000*60*60*24));
         const awakeMs = diffMs - (nightsLeft * 8 * 3600 * 1000);
@@ -345,13 +347,21 @@
              if (now < workStart) todayWorkMs = (8.5 * 3600 * 1000);
              else if (now >= workStart && now < workEnd) todayWorkMs = workEnd - now;
         }
-
         const workMs = (wDays * 8.5 * 3600 * 1000) + todayWorkMs;
         
         document.getElementById('main-timer').innerHTML = 
-            `🕓 <span class="footer-highlight">${msToTime(workMs)} Work</span> | 
-                <span class="footer-highlight">${msToTime(awakeMs)} Awake</span> | 
-                <span class="footer-highlight">${tTotal} Total</span>`;
+            `<div class="timer-pill pill-work">
+                <div class="timer-label">Work Left</div>
+                <div class="timer-value">${msToTime(workMs)}</div>
+             </div>
+             <div class="timer-pill pill-awake">
+                <div class="timer-label">Awake Hours</div>
+                <div class="timer-value">${msToTime(awakeMs)}</div>
+             </div>
+             <div class="timer-pill pill-total">
+                <div class="timer-label">Total Time</div>
+                <div class="timer-value">${tTotal}</div>
+             </div>`;
     }
 
     function msToTime(ms) {
@@ -362,6 +372,18 @@
         return `${h}h ${pad(m)}m ${pad(s)}s`;
     }
     function pad(n) { return n < 10 ? '0'+n : n; }
+
+    function launchConfetti() {
+        var duration = 5 * 1000;
+        var animationEnd = Date.now() + duration;
+        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+        var interval = setInterval(function() {
+            var timeLeft = animationEnd - Date.now();
+            if (timeLeft <= 0) { return clearInterval(interval); }
+            var particleCount = 50 * (timeLeft / duration);
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 } }));
+        }, 250);
+    }
 
     function renderCal() {
         const grid = document.getElementById('calendar');
@@ -384,7 +406,6 @@
         while(cur <= TARGET_DATE_EXACT) {
             let el = document.createElement('div');
             el.className = 'cal-cell';
-            
             let isPast = cur < new Date().setHours(0,0,0,0);
             let isToday = cur.toDateString() === new Date().toDateString();
             let isArsenal = ARSENAL_GAMES.some(g => g.toDateString() === cur.toDateString());
@@ -416,4 +437,3 @@
 
 </body>
 </html>
-
