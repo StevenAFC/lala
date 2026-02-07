@@ -8,7 +8,7 @@
     <style>
         :root {
             --bg-gradient: linear-gradient(-45deg, #FF6B6B, #556270, #4ECDC4, #C7F464);
-            --glass-bg: rgba(255, 255, 255, 0.9); /* Slightly more opaque */
+            --glass-bg: rgba(255, 255, 255, 0.9);
             --glass-border: rgba(255, 255, 255, 0.4);
             --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
             --text-color: #2d3748;
@@ -30,10 +30,10 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 10px; /* Minimal padding to prevent edge touching */
+            padding: 10px;
             box-sizing: border-box;
             color: var(--text-color);
-            overflow: hidden; /* Try to force no scroll */
+            overflow: hidden;
         }
 
         @keyframes gradientBG {
@@ -49,12 +49,12 @@
             border: 1px solid white;
             width: 100%;
             max-width: 950px;
-            padding: 25px 30px; /* Reduced vertical padding */
+            padding: 25px 30px;
             border-radius: 20px;
             box-shadow: var(--glass-shadow);
             display: flex;
             flex-direction: column;
-            gap: 15px; /* Consistent spacing between all sections */
+            gap: 15px;
         }
 
         /* --- Progress Bars --- */
@@ -70,7 +70,7 @@
             color: #4a5568;
         }
         .progress-container {
-            height: 16px; /* Slimmer bars */
+            height: 16px;
             background: rgba(255,255,255,0.6);
             border-radius: 8px;
             overflow: hidden;
@@ -103,7 +103,7 @@
         
         .cal-cell {
             background: white;
-            height: 45px; /* Reduced height significantly */
+            height: 45px;
             border-radius: 10px;
             display: flex;
             flex-direction: column;
@@ -128,7 +128,6 @@
             background: linear-gradient(135deg, var(--pop-green-start), var(--pop-green-end));
             color: white;
             border: 1px solid rgba(255,255,255,0.8);
-            /* New Wiggle Animation */
             animation: softWiggle 3s infinite ease-in-out;
             z-index: 1; 
         }
@@ -150,7 +149,7 @@
         .timer-pill {
             background: #1a202c;
             color: #fff;
-            padding: 10px; /* Reduced padding */
+            padding: 10px;
             border-radius: 14px;
             text-align: center;
             border: 1px solid rgba(255,255,255,0.1);
@@ -320,21 +319,34 @@
         document.getElementById('day-bar').style.width = dayPct + "%";
         document.getElementById('day-percent').innerText = dayPct.toFixed(2) + "%";
 
-        // --- Stats ---
-        const sleeps = Math.ceil(diffMs / (1000*60*60*24));
+        // --- Stats (ADJUSTED LOGIC) ---
+        // 1. Calculate Sleeps based on pure date difference (Midnight to Midnight)
+        const targetMidnight = new Date(TARGET_DATE_EXACT);
+        targetMidnight.setHours(0,0,0,0);
+        const todayMidnight = new Date(now);
+        todayMidnight.setHours(0,0,0,0);
+        
+        // Difference in days (Purely based on calendar dates, not time)
+        const sleeps = Math.round((targetMidnight - todayMidnight) / (1000 * 60 * 60 * 24));
+        
         const mood = sleeps > 20 ? "😭" : (sleeps > 10 ? "😐" : "🥳");
         document.title = `(${sleeps} Sleeps) Best Day Countdown`;
         document.getElementById('stat-sleeps').innerHTML = `<span style="font-size:1.5rem">${mood}</span> <span>${sleeps} sleeps left!</span>`;
 
-        let d = new Date(now);
+        // 2. Count Thursdays/Weekends occurring in the FUTURE
         let thurs = 0, sats = 0;
-        while(d < TARGET_DATE_EXACT) {
-            if(d.getDay() === 4) thurs++;
-            if(d.getDay() === 6) sats++;
-            d.setDate(d.getDate() + 1);
+        let scanner = new Date(now);
+        scanner.setHours(0,0,0,0);
+        
+        // Loop exactly the number of sleeps into the future
+        for(let i = 1; i <= sleeps; i++) {
+            scanner.setDate(scanner.getDate() + 1); // Move to next day
+            if(scanner.getDay() === 4) thurs++; // 4 = Thursday
+            if(scanner.getDay() === 6) sats++;  // 6 = Saturday (Weekend marker)
         }
         document.getElementById('stat-weekends').innerHTML = `<span style="font-size:1.5rem">📅</span> <span>${thurs} Thursday(s) & ${sats} Weekend(s)</span>`;
 
+        // --- Milestones ---
         const milestones = [{p:0,t:"Started"},{p:25,t:"Quarter Way"},{p:33,t:"Third Way"},{p:50,t:"Midpoint"},{p:75,t:"Home Stretch"},{p:90,t:"Almost There"},{p:100,t:"Complete"}];
         let mileText = milestones[0].t;
         milestones.forEach(m => { if(timePct >= m.p) mileText = m.t; });
@@ -348,16 +360,18 @@
 
         // --- Timer ---
         const tTotal = msToTime(diffMs);
-        const nightsLeft = Math.floor(diffMs / (1000*60*60*24));
-        const awakeMs = diffMs - (nightsLeft * 8 * 3600 * 1000);
+        // Recalculate nightsLeft for awake time based on new precise sleep count? 
+        // No, keep original 'time-based' math for the "Awake Hours" as that is technically correct for hours.
+        const nightsLeftRaw = Math.floor(diffMs / (1000*60*60*24));
+        const awakeMs = diffMs - (nightsLeftRaw * 8 * 3600 * 1000);
         
         let wDays = 0;
-        let scanner = new Date(now);
-        scanner.setDate(scanner.getDate() + 1); scanner.setHours(0,0,0,0);
-        while(scanner < TARGET_DATE_EXACT) {
-            let day = scanner.getDay();
+        let workScanner = new Date(now);
+        workScanner.setDate(workScanner.getDate() + 1); workScanner.setHours(0,0,0,0);
+        while(workScanner < TARGET_DATE_EXACT) {
+            let day = workScanner.getDay();
             if(day !== 0 && day !== 6) wDays++;
-            scanner.setDate(scanner.getDate() + 1);
+            workScanner.setDate(workScanner.getDate() + 1);
         }
         
         let todayWorkMs = 0;
@@ -457,4 +471,3 @@
 
 </body>
 </html>
-
