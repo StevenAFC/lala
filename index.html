@@ -400,11 +400,11 @@
       const TARGET_DATE_MATH = new Date("2026-02-26T00:00:00");
       const TARGET_DATE_EXACT = new Date("2026-02-26T09:30:00");
       const ARSENAL_GAMES = [
-        new Date(2026, 1, 7),
-        new Date(2026, 1, 12),
-        new Date(2026, 1, 15),
-        new Date(2026, 1, 18),
-        new Date(2026, 1, 22),
+        new Date(2026, 1, 7, 15, 0),
+        new Date(2026, 1, 12, 20, 0),
+        new Date(2026, 1, 15, 16, 30),
+        new Date(2026, 1, 18, 20, 0),
+        new Date(2026, 1, 22, 16, 30),
       ];
 
       let confettiLaunched = false;
@@ -512,10 +512,9 @@
         document.getElementById("stat-milestone").innerHTML =
           `<span style="font-size:1.5rem">📈</span> <span>${mileText}</span>`;
 
-        const gamesLeft = ARSENAL_GAMES.filter((g) => {
-          let gEnd = new Date(g);
-          gEnd.setHours(23, 59, 59);
-          return gEnd > now;
+        const gamesLeft = ARSENAL_GAMES.filter((gameStartTime) => {
+          const gameEndTime = new Date(gameStartTime.getTime() + 105 * 60000); // 105 minutes in milliseconds
+          return gameEndTime > now;
         }).length;
         document.getElementById("stat-arsenal").innerHTML =
           `<span style="font-size:1.5rem">⚽</span> <span>${gamesLeft} Arsenal games!</span>`;
@@ -627,7 +626,12 @@
             el.innerHTML = `<span class="check-mark">✔</span>`;
           } else if (isToday) {
             el.classList.add("today");
-            el.innerHTML = `<span class="date-num">${cur.getDate()}</span><span class="status-icon">🚀</span>`;
+            if (isArsenal) {
+              el.classList.add("arsenal");
+              el.innerHTML = `<span class="date-num">${cur.getDate()}</span><span class="status-icon">⚽</span>`;
+            } else {
+              el.innerHTML = `<span class="date-num">${cur.getDate()}</span><span class="status-icon">🚀</span>`;
+            }
           } else {
             el.innerHTML = `<span class="date-num">${cur.getDate()}</span>`;
             if (isArsenal) {
