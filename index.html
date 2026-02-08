@@ -1,390 +1,556 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Best Day Eva</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        :root {
-            --bg-gradient: linear-gradient(-45deg, #FF6B6B, #556270, #4ECDC4, #C7F464);
-            --glass-bg: rgba(255, 255, 255, 0.9);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-            --text-color: #2d3748;
-            --weekend-color: #cbd5e0;
-            --best-day-gold: #f6ad55;
-            --pop-green-start: #00ff87;
-            --pop-green-end: #60efff;
-            --bar-day-color: linear-gradient(90deg, #2c3e50 0%, #4ca1af 100%);
-            --bar-time-color: linear-gradient(90deg, #FF8008 0%, #FFC837 100%);
-        }
+      :root {
+        --bg-gradient: linear-gradient(
+          -45deg,
+          #ff6b6b,
+          #556270,
+          #4ecdc4,
+          #c7f464
+        );
+        --glass-bg: rgba(255, 255, 255, 0.9);
+        --glass-border: rgba(255, 255, 255, 0.4);
+        --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        --text-color: #2d3748;
+        --weekend-color: #cbd5e0;
+        --best-day-gold: #f6ad55;
+        --pop-green-start: #00ff87;
+        --pop-green-end: #60efff;
+        --bar-day-color: linear-gradient(90deg, #2c3e50 0%, #4ca1af 100%);
+        --bar-time-color: linear-gradient(90deg, #ff8008 0%, #ffc837 100%);
+      }
 
+      body {
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg-gradient);
+        background-size: 400% 400%;
+        animation: gradientBG 20s ease infinite;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 10px;
+        box-sizing: border-box;
+        color: var(--text-color);
+        overflow: hidden;
+      }
+
+      @keyframes gradientBG {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .dashboard {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid white;
+        width: 100%;
+        max-width: 950px;
+        padding: 25px 30px;
+        border-radius: 20px;
+        box-shadow: var(--glass-shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      /* --- Progress Bars --- */
+      .bar-group {
+        margin-bottom: 5px;
+      }
+      .bar-label {
+        font-weight: 800;
+        margin-bottom: 5px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: #4a5568;
+      }
+      .progress-container {
+        height: 16px;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(200, 200, 200, 0.5);
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        border-radius: 8px;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      }
+      #day-bar {
+        background: var(--bar-day-color);
+      }
+      #time-bar {
+        background: var(--bar-time-color);
+      }
+
+      /* --- Calendar --- */
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+      }
+      .cal-header {
+        text-align: center;
+        font-weight: 800;
+        font-size: 0.8rem;
+        color: #718096;
+        padding-bottom: 2px;
+      }
+
+      .cal-cell {
+        background: white;
+        height: 45px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        cursor: default;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+      }
+
+      .cal-cell.weekend {
+        background: var(--weekend-color);
+        border-color: #a0aec0;
+        opacity: 0.8;
+      }
+
+      .cal-cell.empty {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+      }
+
+      .cal-cell.past {
+        background: linear-gradient(
+          135deg,
+          var(--pop-green-start),
+          var(--pop-green-end)
+        );
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        animation: softWiggle 3s infinite ease-in-out;
+        z-index: 1;
+      }
+
+      .check-mark {
+        font-size: 1.4rem;
+        font-weight: 900;
+        line-height: 1;
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      /* --- Split Timer --- */
+      .timer-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+      }
+
+      .timer-pill {
+        background: #1a202c;
+        color: #fff;
+        padding: 10px;
+        border-radius: 14px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 15px -5px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .timer-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.7;
+        margin-bottom: 2px;
+      }
+
+      .timer-value {
+        font-family: "Courier New", Courier, monospace;
+        font-weight: 700;
+        font-size: 1.2rem;
+        letter-spacing: -1px;
+      }
+
+      .pill-work .timer-value {
+        color: #f6ad55;
+        text-shadow: 0 0 10px rgba(246, 173, 85, 0.5);
+      }
+      .pill-awake .timer-value {
+        color: #63b3ed;
+      }
+      .pill-total .timer-value {
+        color: #e2e8f0;
+      }
+
+      /* --- Stats Grid (2x2 Layout) --- */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .stat-card {
+        padding: 12px;
+        border-radius: 14px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s;
+      }
+      .stat-card:hover {
+        transform: translateY(-3px) scale(1.02);
+      }
+
+      .stat-blue {
+        background: linear-gradient(
+          135deg,
+          rgba(227, 242, 253, 0.9),
+          rgba(187, 222, 251, 0.95)
+        );
+        color: #0d47a1;
+      }
+      .stat-green {
+        background: linear-gradient(
+          135deg,
+          rgba(232, 245, 233, 0.9),
+          rgba(200, 230, 201, 0.95)
+        );
+        color: #1b5e20;
+      }
+      .stat-gold {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 248, 225, 0.9),
+          rgba(255, 236, 179, 0.95)
+        );
+        color: #f57f17;
+      }
+      .stat-red {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 235, 238, 0.95),
+          rgba(255, 205, 210, 1)
+        );
+        color: #b71c1c;
+        border: 1px solid #ef9a9a;
+      }
+
+      /* --- Animations --- */
+      @keyframes softWiggle {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        2% {
+          transform: rotate(-3deg);
+        }
+        4% {
+          transform: rotate(3deg);
+        }
+        6% {
+          transform: rotate(-3deg);
+        }
+        8% {
+          transform: rotate(3deg);
+        }
+        10% {
+          transform: rotate(0deg);
+        }
+      }
+
+      @keyframes todayPulse {
+        0% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(246, 173, 85, 0.7);
+        }
+        70% {
+          transform: scale(1.05);
+          box-shadow: 0 0 0 10px rgba(246, 173, 85, 0);
+        }
+        100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(246, 173, 85, 0);
+        }
+      }
+      .cal-cell.today {
+        background: white;
+        border: 3px solid var(--best-day-gold);
+        z-index: 2;
+        animation: todayPulse 2s infinite;
+      }
+      .cal-cell.arsenal {
+        background: #fc8181;
+        color: white;
+      }
+
+      .date-num {
+        font-size: 0.8rem;
+        font-weight: bold;
+      }
+      .status-icon {
+        font-size: 1.1rem;
+        margin-top: 1px;
+      }
+
+      /* --- Mobile --- */
+      @media (max-width: 650px) {
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--bg-gradient);
-            background-size: 400% 400%;
-            animation: gradientBG 20s ease infinite;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 10px;
-            box-sizing: border-box;
-            color: var(--text-color);
-            overflow: hidden;
+          overflow: auto;
+          height: auto;
+          display: block;
         }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
         .dashboard {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid white;
-            width: 100%;
-            max-width: 950px;
-            padding: 25px 30px;
-            border-radius: 20px;
-            box-shadow: var(--glass-shadow);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+          padding: 15px;
+          height: auto;
         }
-
-        /* --- Progress Bars --- */
-        .bar-group { margin-bottom: 5px; }
-        .bar-label { 
-            font-weight: 800; 
-            margin-bottom: 5px; 
-            display: flex; 
-            justify-content: space-between; 
-            font-size: 0.8rem; 
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            color: #4a5568;
+        .stats-grid {
+          grid-template-columns: 1fr;
         }
-        .progress-container {
-            height: 16px;
-            background: rgba(255,255,255,0.6);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
-            border: 1px solid rgba(200,200,200,0.5);
-        }
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
-            border-radius: 8px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-        }
-        #day-bar { background: var(--bar-day-color); }
-        #time-bar { background: var(--bar-time-color); }
-
-        /* --- Calendar --- */
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-        }
-        .cal-header {
-            text-align: center;
-            font-weight: 800;
-            font-size: 0.8rem;
-            color: #718096;
-            padding-bottom: 2px;
-        }
-        
-        .cal-cell {
-            background: white;
-            height: 45px;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            cursor: default;
-            border: 1px solid rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-        
-        .cal-cell.weekend { 
-            background: var(--weekend-color); 
-            border-color: #a0aec0;
-            opacity: 0.8;
-        }
-        
-        .cal-cell.empty { background: transparent; border: none; box-shadow: none; }
-        
-        .cal-cell.past { 
-            background: linear-gradient(135deg, var(--pop-green-start), var(--pop-green-end));
-            color: white;
-            border: 1px solid rgba(255,255,255,0.8);
-            animation: softWiggle 3s infinite ease-in-out;
-            z-index: 1; 
-        }
-
-        .check-mark {
-            font-size: 1.4rem;
-            font-weight: 900;
-            line-height: 1;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        /* --- Split Timer --- */
         .timer-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
+          grid-template-columns: 1fr;
+          gap: 10px;
         }
-
-        .timer-pill {
-            background: #1a202c;
-            color: #fff;
-            padding: 10px;
-            border-radius: 14px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 8px 15px -5px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .timer-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.7;
-            margin-bottom: 2px;
-        }
-
         .timer-value {
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: 700;
-            font-size: 1.2rem;
-            letter-spacing: -1px;
+          font-size: 1.8rem;
         }
-
-        .pill-work .timer-value { color: #f6ad55; text-shadow: 0 0 10px rgba(246, 173, 85, 0.5); }
-        .pill-awake .timer-value { color: #63b3ed; }
-        .pill-total .timer-value { color: #e2e8f0; }
-
-        /* --- Stats Grid (2x2 Layout) --- */
-        .stats-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
+        .cal-cell {
+          height: 45px;
         }
-        .stat-card {
-            padding: 12px;
-            border-radius: 14px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.6);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
-        }
-        .stat-card:hover { transform: translateY(-3px) scale(1.02); }
-
-        .stat-blue { background: linear-gradient(135deg, rgba(227, 242, 253, 0.9), rgba(187, 222, 251, 0.95)); color: #0d47a1; }
-        .stat-green { background: linear-gradient(135deg, rgba(232, 245, 233, 0.9), rgba(200, 230, 201, 0.95)); color: #1b5e20; }
-        .stat-gold { background: linear-gradient(135deg, rgba(255, 248, 225, 0.9), rgba(255, 236, 179, 0.95)); color: #f57f17; }
-        .stat-red { background: linear-gradient(135deg, rgba(255, 235, 238, 0.95), rgba(255, 205, 210, 1)); color: #b71c1c; border: 1px solid #ef9a9a; }
-
-        /* --- Animations --- */
-        @keyframes softWiggle {
-            0%, 100% { transform: rotate(0deg); }
-            2% { transform: rotate(-3deg); }
-            4% { transform: rotate(3deg); }
-            6% { transform: rotate(-3deg); }
-            8% { transform: rotate(3deg); }
-            10% { transform: rotate(0deg); }
-        }
-
-        @keyframes todayPulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246, 173, 85, 0.7); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(246, 173, 85, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246, 173, 85, 0); }
-        }
-        .cal-cell.today { background: white; border: 3px solid var(--best-day-gold); z-index: 2; animation: todayPulse 2s infinite; }
-        .cal-cell.arsenal { background: #fc8181; color: white; }
-        
-        .date-num { font-size: 0.8rem; font-weight: bold; }
-        .status-icon { font-size: 1.1rem; margin-top: 1px; }
-
-        /* --- Mobile --- */
-        @media (max-width: 650px) {
-            body { overflow: auto; height: auto; display: block; }
-            .dashboard { padding: 15px; height: auto; }
-            .stats-grid { grid-template-columns: 1fr; } 
-            .timer-container { grid-template-columns: 1fr; gap: 10px; }
-            .timer-value { font-size: 1.8rem; }
-            .cal-cell { height: 45px; }
-        }
+      }
     </style>
-</head>
-<body>
-
-<div class="dashboard">
-    <div>
+  </head>
+  <body>
+    <div class="dashboard">
+      <div>
         <div class="bar-group">
-            <div class="bar-label">
-                <span>Day Progress</span>
-                <span id="day-percent">0%</span>
-            </div>
-            <div class="progress-container">
-                <div id="day-bar" class="progress-fill"></div>
-            </div>
+          <div class="bar-label">
+            <span>Day Progress</span>
+            <span id="day-percent">0%</span>
+          </div>
+          <div class="progress-container">
+            <div id="day-bar" class="progress-fill"></div>
+          </div>
         </div>
 
         <div class="bar-group">
-            <div class="bar-label">
-                <span>Time Progress</span>
-                <span id="time-percent">0%</span>
-            </div>
-            <div class="progress-container">
-                <div id="time-bar" class="progress-fill"></div>
-            </div>
+          <div class="bar-label">
+            <span>Time Progress</span>
+            <span id="time-percent">0%</span>
+          </div>
+          <div class="progress-container">
+            <div id="time-bar" class="progress-fill"></div>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <div class="calendar-grid" id="calendar"></div>
+      <div class="calendar-grid" id="calendar"></div>
 
-    <div class="timer-container" id="main-timer"></div>
+      <div class="timer-container" id="main-timer"></div>
 
-    <div class="stats-grid">
+      <div class="stats-grid">
         <div class="stat-card stat-blue" id="stat-sleeps">Loading...</div>
         <div class="stat-card stat-green" id="stat-weekends">Loading...</div>
         <div class="stat-card stat-gold" id="stat-milestone">Loading...</div>
         <div class="stat-card stat-red" id="stat-arsenal">Loading...</div>
+      </div>
     </div>
-</div>
 
-<script>
-    const START_DATE = new Date("2026-01-29T00:00:00");
-    const TARGET_DATE_MATH = new Date("2026-02-26T00:00:00"); 
-    const TARGET_DATE_EXACT = new Date("2026-02-26T09:30:00"); 
-    const ARSENAL_GAMES = [
-        new Date(2026, 1, 7), new Date(2026, 1, 12), 
-        new Date(2026, 1, 15), new Date(2026, 1, 18), new Date(2026, 1, 22)
-    ];
+    <script>
+      const START_DATE = new Date("2026-01-29T00:00:00");
+      const TARGET_DATE_MATH = new Date("2026-02-26T00:00:00");
+      const TARGET_DATE_EXACT = new Date("2026-02-26T09:30:00");
+      const ARSENAL_GAMES = [
+        new Date(2026, 1, 7),
+        new Date(2026, 1, 12),
+        new Date(2026, 1, 15),
+        new Date(2026, 1, 18),
+        new Date(2026, 1, 22),
+      ];
 
-    let confettiLaunched = false;
+      let confettiLaunched = false;
+      let today = new Date().toDateString();
 
-    function update() {
+      function update() {
         const now = new Date();
+
+        // --- Check for day change to re-render calendar ---
+        if (now.toDateString() !== today) {
+          today = now.toDateString();
+          renderCal();
+        }
+
         const diffMs = TARGET_DATE_EXACT - now;
 
-        if(diffMs <= 0) {
-            document.getElementById('main-timer').innerHTML = 
-                `<div class="timer-pill pill-work" style="grid-column: span 3;">
+        if (diffMs <= 0) {
+          document.getElementById("main-timer").innerHTML =
+            `<div class="timer-pill pill-work" style="grid-column: span 3;">
                     <div class="timer-value">🚀 IT'S TIME!</div>
                  </div>`;
-            document.title = "🎉 IT'S TIME! 🎉";
-            if(!confettiLaunched) {
-                launchConfetti();
-                confettiLaunched = true;
-            }
-            return;
+          document.title = "🎉 IT'S TIME! 🎉";
+          if (!confettiLaunched) {
+            launchConfetti();
+            confettiLaunched = true;
+          }
+          return;
         }
 
         // --- Bars ---
         const totalDurationMs = TARGET_DATE_EXACT - START_DATE;
         const elapsedMs = now - START_DATE;
-        const timePct = Math.min(100, Math.max(0, (elapsedMs / totalDurationMs) * 100));
-        
-        const nowMidnight = new Date(now); nowMidnight.setHours(0,0,0,0);
-        const totalDays = Math.round((TARGET_DATE_MATH - START_DATE) / (1000 * 60 * 60 * 24));
-        const daysPassed = Math.round((nowMidnight - START_DATE) / (1000 * 60 * 60 * 24));
-        const dayPct = Math.min(100, Math.max(0, (daysPassed / totalDays) * 100));
+        const timePct = Math.min(
+          100,
+          Math.max(0, (elapsedMs / totalDurationMs) * 100),
+        );
 
-        document.getElementById('time-bar').style.width = timePct + "%";
-        document.getElementById('time-percent').innerText = timePct.toFixed(2) + "%";
-        document.getElementById('day-bar').style.width = dayPct + "%";
-        document.getElementById('day-percent').innerText = dayPct.toFixed(2) + "%";
+        const nowMidnight = new Date(now);
+        nowMidnight.setHours(0, 0, 0, 0);
+        const totalDays = Math.round(
+          (TARGET_DATE_MATH - START_DATE) / (1000 * 60 * 60 * 24),
+        );
+        const daysPassed = Math.round(
+          (nowMidnight - START_DATE) / (1000 * 60 * 60 * 24),
+        );
+        const dayPct = Math.min(
+          100,
+          Math.max(0, (daysPassed / totalDays) * 100),
+        );
+
+        document.getElementById("time-bar").style.width = timePct + "%";
+        document.getElementById("time-percent").innerText =
+          timePct.toFixed(2) + "%";
+        document.getElementById("day-bar").style.width = dayPct + "%";
+        document.getElementById("day-percent").innerText =
+          dayPct.toFixed(2) + "%";
 
         // --- Stats (ADJUSTED LOGIC) ---
         // 1. Calculate Sleeps based on pure date difference (Midnight to Midnight)
         const targetMidnight = new Date(TARGET_DATE_EXACT);
-        targetMidnight.setHours(0,0,0,0);
+        targetMidnight.setHours(0, 0, 0, 0);
         const todayMidnight = new Date(now);
-        todayMidnight.setHours(0,0,0,0);
-        
+        todayMidnight.setHours(0, 0, 0, 0);
+
         // Difference in days (Purely based on calendar dates, not time)
-        const sleeps = Math.round((targetMidnight - todayMidnight) / (1000 * 60 * 60 * 24));
-        
-        const mood = sleeps > 20 ? "😭" : (sleeps > 10 ? "😐" : "🥳");
+        const sleeps = Math.round(
+          (targetMidnight - todayMidnight) / (1000 * 60 * 60 * 24),
+        );
+
+        const mood = sleeps > 20 ? "😭" : sleeps > 10 ? "😐" : "🥳";
         document.title = `(${sleeps} Sleeps) Best Day Countdown`;
-        document.getElementById('stat-sleeps').innerHTML = `<span style="font-size:1.5rem">${mood}</span> <span>${sleeps} sleeps left!</span>`;
+        document.getElementById("stat-sleeps").innerHTML =
+          `<span style="font-size:1.5rem">${mood}</span> <span>${sleeps} sleeps left!</span>`;
 
         // 2. Count Thursdays/Weekends occurring in the FUTURE
-        let thurs = 0, sats = 0;
+        let thurs = 0,
+          sats = 0;
         let scanner = new Date(now);
-        scanner.setHours(0,0,0,0);
-        
+        scanner.setHours(0, 0, 0, 0);
+
         // Loop exactly the number of sleeps into the future
-        for(let i = 1; i <= sleeps; i++) {
-            scanner.setDate(scanner.getDate() + 1); // Move to next day
-            if(scanner.getDay() === 4) thurs++; // 4 = Thursday
-            if(scanner.getDay() === 6) sats++;  // 6 = Saturday (Weekend marker)
+        for (let i = 1; i <= sleeps; i++) {
+          scanner.setDate(scanner.getDate() + 1); // Move to next day
+          if (scanner.getDay() === 4) thurs++; // 4 = Thursday
+          if (scanner.getDay() === 6) sats++; // 6 = Saturday (Weekend marker)
         }
-        document.getElementById('stat-weekends').innerHTML = `<span style="font-size:1.5rem">📅</span> <span>${thurs} Thursday(s) & ${sats} Weekend(s)</span>`;
+        thurs--;
+        document.getElementById("stat-weekends").innerHTML =
+          `<span style="font-size:1.5rem">📅</span> <span>${thurs} Thursday(s) & ${sats} Weekend(s)</span>`;
 
         // --- Milestones ---
-        const milestones = [{p:0,t:"Started"},{p:25,t:"Quarter Way"},{p:33,t:"Third Way"},{p:50,t:"Midpoint"},{p:75,t:"Home Stretch"},{p:90,t:"Almost There"},{p:100,t:"Complete"}];
+        const milestones = [
+          { p: 0, t: "Started" },
+          { p: 25, t: "Quarter Way" },
+          { p: 33, t: "Third Way" },
+          { p: 50, t: "Midpoint" },
+          { p: 75, t: "Home Stretch" },
+          { p: 90, t: "Almost There" },
+          { p: 100, t: "Complete" },
+        ];
         let mileText = milestones[0].t;
-        milestones.forEach(m => { if(timePct >= m.p) mileText = m.t; });
-        document.getElementById('stat-milestone').innerHTML = `<span style="font-size:1.5rem">📈</span> <span>${mileText}</span>`;
+        milestones.forEach((m) => {
+          if (timePct >= m.p) mileText = m.t;
+        });
+        document.getElementById("stat-milestone").innerHTML =
+          `<span style="font-size:1.5rem">📈</span> <span>${mileText}</span>`;
 
-        const gamesLeft = ARSENAL_GAMES.filter(g => {
-            let gEnd = new Date(g); gEnd.setHours(23,59,59);
-            return gEnd > now;
+        const gamesLeft = ARSENAL_GAMES.filter((g) => {
+          let gEnd = new Date(g);
+          gEnd.setHours(23, 59, 59);
+          return gEnd > now;
         }).length;
-        document.getElementById('stat-arsenal').innerHTML = `<span style="font-size:1.5rem">⚽</span> <span>${gamesLeft} Arsenal games!</span>`;
+        document.getElementById("stat-arsenal").innerHTML =
+          `<span style="font-size:1.5rem">⚽</span> <span>${gamesLeft} Arsenal games!</span>`;
 
         // --- Timer ---
         const tTotal = msToTime(diffMs);
-        // Recalculate nightsLeft for awake time based on new precise sleep count? 
+        // Recalculate nightsLeft for awake time based on new precise sleep count?
         // No, keep original 'time-based' math for the "Awake Hours" as that is technically correct for hours.
-        const nightsLeftRaw = Math.floor(diffMs / (1000*60*60*24));
-        const awakeMs = diffMs - (nightsLeftRaw * 8 * 3600 * 1000);
-        
+        const nightsLeftRaw = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const awakeMs = diffMs - nightsLeftRaw * 8 * 3600 * 1000;
+
         let wDays = 0;
         let workScanner = new Date(now);
-        workScanner.setDate(workScanner.getDate() + 1); workScanner.setHours(0,0,0,0);
-        while(workScanner < TARGET_DATE_EXACT) {
-            let day = workScanner.getDay();
-            if(day !== 0 && day !== 6) wDays++;
-            workScanner.setDate(workScanner.getDate() + 1);
+        workScanner.setDate(workScanner.getDate() + 1);
+        workScanner.setHours(0, 0, 0, 0);
+        while (workScanner < TARGET_DATE_EXACT) {
+          let day = workScanner.getDay();
+          if (day !== 0 && day !== 6) wDays++;
+          workScanner.setDate(workScanner.getDate() + 1);
         }
-        
+
         let todayWorkMs = 0;
         if (now.getDay() !== 0 && now.getDay() !== 6) {
-             const workStart = new Date(now); workStart.setHours(9,0,0,0);
-             const workEnd = new Date(now); workEnd.setHours(17,30,0,0);
-             if (now < workStart) todayWorkMs = (8.5 * 3600 * 1000);
-             else if (now >= workStart && now < workEnd) todayWorkMs = workEnd - now;
+          const workStart = new Date(now);
+          workStart.setHours(9, 0, 0, 0);
+          const workEnd = new Date(now);
+          workEnd.setHours(17, 30, 0, 0);
+          if (now < workStart) todayWorkMs = 8.5 * 3600 * 1000;
+          else if (now >= workStart && now < workEnd)
+            todayWorkMs = workEnd - now;
         }
-        const workMs = (wDays * 8.5 * 3600 * 1000) + todayWorkMs;
-        
-        document.getElementById('main-timer').innerHTML = 
-            `<div class="timer-pill pill-work">
+        const workMs = wDays * 8.5 * 3600 * 1000 + todayWorkMs;
+
+        document.getElementById("main-timer").innerHTML =
+          `<div class="timer-pill pill-work">
                 <div class="timer-label">Work Left</div>
                 <div class="timer-value">${msToTime(workMs)}</div>
              </div>
@@ -396,78 +562,89 @@
                 <div class="timer-label">Total Time</div>
                 <div class="timer-value">${tTotal}</div>
              </div>`;
-    }
+      }
 
-    function msToTime(ms) {
-        if(ms < 0) return "00h 00m 00s";
-        let s = Math.floor((ms/1000)%60);
-        let m = Math.floor((ms/(1000*60))%60);
-        let h = Math.floor((ms/(1000*60*60)));
+      function msToTime(ms) {
+        if (ms < 0) return "00h 00m 00s";
+        let s = Math.floor((ms / 1000) % 60);
+        let m = Math.floor((ms / (1000 * 60)) % 60);
+        let h = Math.floor(ms / (1000 * 60 * 60));
         return `${h}h ${pad(m)}m ${pad(s)}s`;
-    }
-    function pad(n) { return n < 10 ? '0'+n : n; }
+      }
+      function pad(n) {
+        return n < 10 ? "0" + n : n;
+      }
 
-    function launchConfetti() {
+      function launchConfetti() {
         var duration = 5 * 1000;
         var animationEnd = Date.now() + duration;
         var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-        var interval = setInterval(function() {
-            var timeLeft = animationEnd - Date.now();
-            if (timeLeft <= 0) { return clearInterval(interval); }
-            var particleCount = 50 * (timeLeft / duration);
-            confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 } }));
+        var interval = setInterval(function () {
+          var timeLeft = animationEnd - Date.now();
+          if (timeLeft <= 0) {
+            return clearInterval(interval);
+          }
+          var particleCount = 50 * (timeLeft / duration);
+          confetti(
+            Object.assign({}, defaults, {
+              particleCount,
+              origin: { x: Math.random(), y: Math.random() - 0.2 },
+            }),
+          );
         }, 250);
-    }
+      }
 
-    function renderCal() {
-        const grid = document.getElementById('calendar');
-        ['M','T','W','T','F','S','S'].forEach(d => {
-            let el = document.createElement('div');
-            el.className = 'cal-header';
-            el.innerText = d;
-            grid.appendChild(el);
+      function renderCal() {
+        const grid = document.getElementById("calendar");
+        grid.innerHTML = "";
+        ["M", "T", "W", "T", "F", "S", "S"].forEach((d) => {
+          let el = document.createElement("div");
+          el.className = "cal-header";
+          el.innerText = d;
+          grid.appendChild(el);
         });
 
-        let startDayIndex = START_DATE.getDay(); 
-        let monStartIndex = (startDayIndex === 0) ? 6 : startDayIndex - 1;
-        for(let i=0; i<monStartIndex; i++) {
-            let empty = document.createElement('div');
-            empty.className = 'cal-cell empty';
-            grid.appendChild(empty);
+        let startDayIndex = START_DATE.getDay();
+        let monStartIndex = startDayIndex === 0 ? 6 : startDayIndex - 1;
+        for (let i = 0; i < monStartIndex; i++) {
+          let empty = document.createElement("div");
+          empty.className = "cal-cell empty";
+          grid.appendChild(empty);
         }
 
         let cur = new Date(START_DATE);
-        while(cur <= TARGET_DATE_EXACT) {
-            let el = document.createElement('div');
-            el.className = 'cal-cell';
-            let isPast = cur < new Date().setHours(0,0,0,0);
-            let isToday = cur.toDateString() === new Date().toDateString();
-            let isArsenal = ARSENAL_GAMES.some(g => g.toDateString() === cur.toDateString());
+        while (cur <= TARGET_DATE_EXACT) {
+          let el = document.createElement("div");
+          el.className = "cal-cell";
+          let isPast = cur < new Date().setHours(0, 0, 0, 0);
+          let isToday = cur.toDateString() === new Date().toDateString();
+          let isArsenal = ARSENAL_GAMES.some(
+            (g) => g.toDateString() === cur.toDateString(),
+          );
 
-            if(isPast) { 
-                el.classList.add('past'); 
-                el.innerHTML = `<span class="check-mark">✔</span>`; 
-            } else if(isToday) { 
-                el.classList.add('today'); 
-                el.innerHTML = `<span class="date-num">${cur.getDate()}</span><span class="status-icon">🚀</span>`; 
-            } else {
-                el.innerHTML = `<span class="date-num">${cur.getDate()}</span>`;
-                if(isArsenal) {
-                    el.classList.add('arsenal');
-                    el.innerHTML += `<span class="status-icon">⚽</span>`;
-                } else if(cur.getDay() === 0 || cur.getDay() === 6) {
-                    el.classList.add('weekend');
-                }
+          if (isPast) {
+            el.classList.add("past");
+            el.innerHTML = `<span class="check-mark">✔</span>`;
+          } else if (isToday) {
+            el.classList.add("today");
+            el.innerHTML = `<span class="date-num">${cur.getDate()}</span><span class="status-icon">🚀</span>`;
+          } else {
+            el.innerHTML = `<span class="date-num">${cur.getDate()}</span>`;
+            if (isArsenal) {
+              el.classList.add("arsenal");
+              el.innerHTML += `<span class="status-icon">⚽</span>`;
+            } else if (cur.getDay() === 0 || cur.getDay() === 6) {
+              el.classList.add("weekend");
             }
-            grid.appendChild(el);
-            cur.setDate(cur.getDate() + 1);
+          }
+          grid.appendChild(el);
+          cur.setDate(cur.getDate() + 1);
         }
-    }
+      }
 
-    renderCal();
-    setInterval(update, 1000);
-    update();
-</script>
-
-</body>
+      renderCal();
+      setInterval(update, 1000);
+      update();
+    </script>
+  </body>
 </html>
