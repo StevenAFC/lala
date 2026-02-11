@@ -463,16 +463,21 @@
           dayPct.toFixed(2) + "%";
 
         // --- Stats (ADJUSTED LOGIC) ---
-        // 1. Calculate Sleeps based on pure date difference (Midnight to Midnight)
-        const targetMidnight = new Date(TARGET_DATE_EXACT);
-        targetMidnight.setHours(0, 0, 0, 0);
-        const todayMidnight = new Date(now);
-        todayMidnight.setHours(0, 0, 0, 0);
+        // 1. Calculate Sleeps based on a 7am wakeup time. A "sleep" is one night's rest.
+        let sleeps = 0;
+        let counter = new Date(now);
+        counter.setHours(7, 0, 0, 0);
 
-        // Difference in days (Purely based on calendar dates, not time)
-        const sleeps = Math.round(
-          (targetMidnight - todayMidnight) / (1000 * 60 * 60 * 24),
-        );
+        // If it's already past 7am today, the next sleep/wakeup cycle is tomorrow's.
+        if (now.getTime() >= counter.getTime()) {
+          counter.setDate(counter.getDate() + 1);
+        }
+
+        // Count how many 7am wakeups are between now and the target.
+        while (counter < TARGET_DATE_EXACT) {
+          sleeps++;
+          counter.setDate(counter.getDate() + 1);
+        }
 
         const mood = sleeps > 20 ? "😭" : sleeps > 10 ? "😐" : "🥳";
         document.title = `(${sleeps} Sleeps) Best Day Countdown`;
@@ -521,10 +526,9 @@
 
         // --- Timer ---
         const tTotal = msToTime(diffMs);
-        // Recalculate nightsLeft for awake time based on new precise sleep count?
-        // No, keep original 'time-based' math for the "Awake Hours" as that is technically correct for hours.
-        const nightsLeftRaw = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-        const awakeMs = diffMs - nightsLeftRaw * 8 * 3600 * 1000;
+        // Calculate awake time by subtracting sleep periods (23:00-07:00)
+        const totalSleepMs = calculateTotalSleepMs(now, TARGET_DATE_EXACT);
+        const awakeMs = diffMs > totalSleepMs ? diffMs - totalSleepMs : 0;
 
         let wDays = 0;
         let workScanner = new Date(now);
@@ -561,6 +565,34 @@
                 <div class="timer-label">Total Time</div>
                 <div class="timer-value">${tTotal}</div>
              </div>`;
+      }
+
+      function calculateTotalSleepMs(start, end) {
+        let totalSleep = 0;
+        let current = new Date(start);
+        current.setHours(0, 0, 0, 0);
+
+        while (current < end) {
+          // Sleep period is from 23:00 on 'current' day to 07:00 on 'current+1' day
+          let sleepStart = new Date(current);
+          sleepStart.setHours(23);
+
+          let sleepEnd = new Date(current);
+          sleepEnd.setDate(sleepEnd.getDate() + 1);
+          sleepEnd.setHours(7);
+
+          // Calculate overlap
+          const overlap_start = Math.max(start.getTime(), sleepStart.getTime());
+          const overlap_end = Math.min(end.getTime(), sleepEnd.getTime());
+
+          if (overlap_end > overlap_start) {
+            totalSleep += overlap_end - overlap_start;
+          }
+
+          // Move to next day
+          current.setDate(current.getDate() + 1);
+        }
+        return totalSleep;
       }
 
       function msToTime(ms) {
