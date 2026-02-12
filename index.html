@@ -455,12 +455,18 @@
           Math.max(0, (daysPassed / totalDays) * 100),
         );
 
+        // Time Bar
+        const timeInverse = 100 - timePct; // Calculate the remaining %
         document.getElementById("time-bar").style.width = timePct + "%";
         document.getElementById("time-percent").innerText =
-          timePct.toFixed(2) + "%";
+          timePct.toFixed(2) + "% (" + timeInverse.toFixed(2) + "%)";
+
+        // Day Bar
+        const dayInverse = 100 - dayPct; // Calculate the remaining %
+
         document.getElementById("day-bar").style.width = dayPct + "%";
         document.getElementById("day-percent").innerText =
-          dayPct.toFixed(2) + "%";
+          dayPct.toFixed(2) + "% (" + dayInverse.toFixed(2) + "%)";
 
         // --- Stats (ADJUSTED LOGIC) ---
         // 1. Calculate Sleeps based on a 7am wakeup time. A "sleep" is one night's rest.
