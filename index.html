@@ -540,7 +540,11 @@
         let workScanner = new Date(now);
         workScanner.setDate(workScanner.getDate() + 1);
         workScanner.setHours(0, 0, 0, 0);
-        while (workScanner < TARGET_DATE_EXACT) {
+
+        const finalDayStart = new Date(TARGET_DATE_EXACT);
+        finalDayStart.setHours(0, 0, 0, 0);
+
+        while (workScanner < finalDayStart) {
           let day = workScanner.getDay();
           if (day !== 0 && day !== 6) wDays++;
           workScanner.setDate(workScanner.getDate() + 1);
@@ -552,11 +556,24 @@
           workStart.setHours(9, 0, 0, 0);
           const workEnd = new Date(now);
           workEnd.setHours(17, 30, 0, 0);
-          if (now < workStart) todayWorkMs = 8.5 * 3600 * 1000;
-          else if (now >= workStart && now < workEnd)
+          if (now < workStart) {
+            todayWorkMs = 8.5 * 3600 * 1000;
+          } else if (now >= workStart && now < workEnd) {
             todayWorkMs = workEnd - now;
+          }
         }
-        const workMs = wDays * 8.5 * 3600 * 1000 + todayWorkMs;
+
+        let lastDayWorkMs = 0;
+        const finalDate = new Date(TARGET_DATE_EXACT);
+        if (finalDate.getDay() !== 0 && finalDate.getDay() !== 6) {
+          const workStartOnFinalDay = new Date(finalDate);
+          workStartOnFinalDay.setHours(9, 0, 0, 0);
+          if (finalDate > workStartOnFinalDay) {
+            lastDayWorkMs = finalDate - workStartOnFinalDay;
+          }
+        }
+
+        const workMs = wDays * 8.5 * 3600 * 1000 + todayWorkMs + lastDayWorkMs;
 
         document.getElementById("main-timer").innerHTML =
           `<div class="timer-pill pill-work">
