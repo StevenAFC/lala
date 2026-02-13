@@ -332,6 +332,53 @@
         margin-top: 1px;
       }
 
+      .digit-group {
+        display: inline-block;
+        position: relative;
+        height: 1.2em; /* Corresponds to timer-value font-size */
+        width: 1ch;
+        text-align: center;
+        overflow: hidden;
+        vertical-align: middle;
+      }
+      .digit-group.hours {
+        width: 1ch; /* Keep it fixed width per digit */
+        display: inline-block;
+      }
+
+      .digit-group[data-value=" "] {
+        visibility: hidden;
+      }
+
+      .digit-group span {
+        display: block;
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+      }
+
+      .digit-group span.rolling-up {
+        animation: slide-up 0.5s ease-in-out forwards;
+      }
+
+      .digit-group span.rolling-up::before {
+        content: attr(data-new-val);
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%; /* The new number starts below the old one */
+      }
+
+      @keyframes slide-up {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(-100%);
+        }
+      }
+
       /* --- Mobile --- */
       @media (max-width: 650px) {
         body {
@@ -410,10 +457,134 @@
       let confettiLaunched = false;
       let today = new Date().toDateString();
 
+      // --- New variables for animated timer ---
+      let timersInitialized = false;
+      const previousTimes = {
+        work: { h: [" ", " ", " ", " "], m: ["0", "0"], s: ["0", "0"] },
+        awake: { h: [" ", " ", " ", " "], m: ["0", "0"], s: ["0", "0"] },
+        total: { h: [" ", " ", " ", " "], m: ["0", "0"], s: ["0", "0"] },
+      };
+
+      function pad(n) {
+        return n < 10 ? "0" + n : "" + n;
+      }
+
+      function initTimers() {
+        if (timersInitialized) return;
+        const timerContainer = document.getElementById("main-timer");
+
+        ["work", "awake", "total"].forEach((type) => {
+          const pill = document.createElement("div");
+          pill.className = `timer-pill pill-${type}`;
+
+          const label = document.createElement("div");
+          label.className = "timer-label";
+          label.textContent =
+            type === "work"
+              ? "Work Left"
+              : type === "awake"
+                ? "Awake Hours"
+                : "Total Time";
+
+          const value = document.createElement("div");
+          value.className = "timer-value";
+
+          // 4 digits for hours, 2 for mins, 2 for secs
+          let html = "";
+
+          // We initialize with data-value=" " so the CSS hides them initially
+          for (let i = 0; i < 4; i++) {
+            html += `<div class="digit-group hours" id="group-${type}-h-${i}" data-value=" "><span id="${type}-h-${i}"> </span></div>`;
+          }
+          html += '<span class="unit">h </span>'; // Wrapped in span for spacing
+
+          for (let i = 0; i < 2; i++) {
+            html += `<div class="digit-group"><span id="${type}-m-${i}">0</span></div>`;
+          }
+          html += '<span class="unit">m </span>';
+
+          for (let i = 0; i < 2; i++) {
+            html += `<div class="digit-group"><span id="${type}-s-${i}">0</span></div>`;
+          }
+          html += '<span class="unit">s</span>';
+
+          value.innerHTML = html;
+
+          pill.appendChild(label);
+          pill.appendChild(value);
+          timerContainer.appendChild(pill);
+        });
+
+        timersInitialized = true;
+      }
+
+      function updateSpan(elementId, from, to) {
+        if (from === to) return;
+
+        const element = document.getElementById(elementId);
+        if (!element || element.classList.contains("rolling-up")) {
+          return;
+        }
+
+        element.dataset.newVal = to;
+        element.classList.add("rolling-up");
+
+        let animationFinished = false;
+        const handleAnimationEnd = () => {
+          if (animationFinished) return;
+          animationFinished = true;
+
+          element.textContent = to;
+          element.classList.remove("rolling-up");
+          element.removeAttribute("data-new-val");
+        };
+
+        element.addEventListener("animationend", handleAnimationEnd, {
+          once: true,
+        });
+
+        // Fallback in case animationend doesn't fire for some reason
+        setTimeout(handleAnimationEnd, 550); // Animation is 0.5s
+      }
+
+      function updateTimer(type, newTimeDigits) {
+        const prevTimeDigits = previousTimes[type];
+
+        // Hours
+        newTimeDigits.h.forEach((digit, i) => {
+          const id = `${type}-h-${i}`;
+          updateSpan(id, prevTimeDigits.h[i], digit);
+          const digitGroup = document.getElementById(id).parentElement;
+          if (digitGroup) digitGroup.dataset.value = digit;
+        });
+        // Minutes
+        newTimeDigits.m.forEach((digit, i) => {
+          updateSpan(`${type}-m-${i}`, prevTimeDigits.m[i], digit);
+        });
+        // Seconds
+        newTimeDigits.s.forEach((digit, i) => {
+          updateSpan(`${type}-s-${i}`, prevTimeDigits.s[i], digit);
+        });
+
+        previousTimes[type] = newTimeDigits;
+      }
+
+      function msToTimeDigits(ms) {
+        if (ms < 0) ms = 0;
+        const h = Math.floor(ms / (1000 * 60 * 60));
+        const m = Math.floor((ms / (1000 * 60)) % 60);
+        const s = Math.floor((ms / 1000) % 60);
+
+        return {
+          h: String(h).padStart(4, " ").split(""),
+          m: pad(m).split(""),
+          s: pad(s).split(""),
+        };
+      }
+
       function update() {
         const now = new Date();
 
-        // --- Check for day change to re-render calendar ---
         if (now.toDateString() !== today) {
           today = now.toDateString();
           renderCal();
@@ -434,7 +605,8 @@
           return;
         }
 
-        // --- Bars ---
+        initTimers();
+
         const totalDurationMs = TARGET_DATE_EXACT - START_DATE;
         const elapsedMs = now - START_DATE;
         const timePct = Math.min(
@@ -455,31 +627,25 @@
           Math.max(0, (daysPassed / totalDays) * 100),
         );
 
-        // Time Bar
-        const timeInverse = 100 - timePct; // Calculate the remaining %
+        const timeInverse = 100 - timePct;
         document.getElementById("time-bar").style.width = timePct + "%";
         document.getElementById("time-percent").innerText =
           timePct.toFixed(2) + "% (" + timeInverse.toFixed(2) + "%)";
 
-        // Day Bar
-        const dayInverse = 100 - dayPct; // Calculate the remaining %
+        const dayInverse = 100 - dayPct;
 
         document.getElementById("day-bar").style.width = dayPct + "%";
         document.getElementById("day-percent").innerText =
           dayPct.toFixed(2) + "% (" + dayInverse.toFixed(2) + "%)";
 
-        // --- Stats (ADJUSTED LOGIC) ---
-        // 1. Calculate Sleeps based on a 7am wakeup time. A "sleep" is one night's rest.
         let sleeps = 0;
         let counter = new Date(now);
         counter.setHours(7, 0, 0, 0);
 
-        // If it's already past 7am today, the next sleep/wakeup cycle is tomorrow's.
         if (now.getTime() >= counter.getTime()) {
           counter.setDate(counter.getDate() + 1);
         }
 
-        // Count how many 7am wakeups are between now and the target.
         while (counter < TARGET_DATE_EXACT) {
           sleeps++;
           counter.setDate(counter.getDate() + 1);
@@ -490,23 +656,20 @@
         document.getElementById("stat-sleeps").innerHTML =
           `<span style="font-size:1.5rem">${mood}</span> <span>${sleeps} sleeps left!</span>`;
 
-        // 2. Count Thursdays/Weekends occurring in the FUTURE
         let thurs = 0,
           sats = 0;
         let scanner = new Date(now);
         scanner.setHours(0, 0, 0, 0);
 
-        // Loop exactly the number of sleeps into the future
         for (let i = 1; i <= sleeps; i++) {
-          scanner.setDate(scanner.getDate() + 1); // Move to next day
-          if (scanner.getDay() === 4) thurs++; // 4 = Thursday
-          if (scanner.getDay() === 6) sats++; // 6 = Saturday (Weekend marker)
+          scanner.setDate(scanner.getDate() + 1);
+          if (scanner.getDay() === 4) thurs++;
+          if (scanner.getDay() === 6) sats++;
         }
         thurs--;
         document.getElementById("stat-weekends").innerHTML =
           `<span style="font-size:1.5rem">📅</span> <span>${thurs} Thursday(s) & ${sats} Weekend(s)</span>`;
 
-        // --- Milestones ---
         const milestones = [
           { p: 0, t: "Started" },
           { p: 25, t: "Quarter Way" },
@@ -524,17 +687,16 @@
           `<span style="font-size:1.5rem">📈</span> <span>${mileText}</span>`;
 
         const gamesLeft = ARSENAL_GAMES.filter((gameStartTime) => {
-          const gameEndTime = new Date(gameStartTime.getTime() + 105 * 60000); // 105 minutes in milliseconds
+          const gameEndTime = new Date(gameStartTime.getTime() + 105 * 60000);
           return gameEndTime > now;
         }).length;
         document.getElementById("stat-arsenal").innerHTML =
           `<span style="font-size:1.5rem">⚽</span> <span>${gamesLeft} Arsenal games!</span>`;
 
         // --- Timer ---
-        const tTotal = msToTime(diffMs);
-        // Calculate awake time by subtracting sleep periods (23:00-07:00)
+        const diffMsVal = diffMs;
         const totalSleepMs = calculateTotalSleepMs(now, TARGET_DATE_EXACT);
-        const awakeMs = diffMs > totalSleepMs ? diffMs - totalSleepMs : 0;
+        const awakeMs = diffMsVal > totalSleepMs ? diffMsVal - totalSleepMs : 0;
 
         let wDays = 0;
         let workScanner = new Date(now);
@@ -575,19 +737,9 @@
 
         const workMs = wDays * 8.5 * 3600 * 1000 + todayWorkMs + lastDayWorkMs;
 
-        document.getElementById("main-timer").innerHTML =
-          `<div class="timer-pill pill-work">
-                <div class="timer-label">Work Left</div>
-                <div class="timer-value">${msToTime(workMs)}</div>
-             </div>
-             <div class="timer-pill pill-awake">
-                <div class="timer-label">Awake Hours</div>
-                <div class="timer-value">${msToTime(awakeMs)}</div>
-             </div>
-             <div class="timer-pill pill-total">
-                <div class="timer-label">Total Time</div>
-                <div class="timer-value">${tTotal}</div>
-             </div>`;
+        updateTimer("work", msToTimeDigits(workMs));
+        updateTimer("awake", msToTimeDigits(awakeMs));
+        updateTimer("total", msToTimeDigits(diffMsVal));
       }
 
       function calculateTotalSleepMs(start, end) {
@@ -596,7 +748,6 @@
         current.setHours(0, 0, 0, 0);
 
         while (current < end) {
-          // Sleep period is from 23:00 on 'current' day to 07:00 on 'current+1' day
           let sleepStart = new Date(current);
           sleepStart.setHours(23);
 
@@ -604,7 +755,6 @@
           sleepEnd.setDate(sleepEnd.getDate() + 1);
           sleepEnd.setHours(7);
 
-          // Calculate overlap
           const overlap_start = Math.max(start.getTime(), sleepStart.getTime());
           const overlap_end = Math.min(end.getTime(), sleepEnd.getTime());
 
@@ -612,21 +762,9 @@
             totalSleep += overlap_end - overlap_start;
           }
 
-          // Move to next day
           current.setDate(current.getDate() + 1);
         }
         return totalSleep;
-      }
-
-      function msToTime(ms) {
-        if (ms < 0) return "00h 00m 00s";
-        let s = Math.floor((ms / 1000) % 60);
-        let m = Math.floor((ms / (1000 * 60)) % 60);
-        let h = Math.floor(ms / (1000 * 60 * 60));
-        return `${h}h ${pad(m)}m ${pad(s)}s`;
-      }
-      function pad(n) {
-        return n < 10 ? "0" + n : n;
       }
 
       function launchConfetti() {
