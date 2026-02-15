@@ -651,7 +651,16 @@
           counter.setDate(counter.getDate() + 1);
         }
 
-        const mood = sleeps > 20 ? "😭" : sleeps > 10 ? "😐" : "🥳";
+        const mood =
+          sleeps > 25
+            ? "😭"
+            : sleeps > 15
+              ? "😩"
+              : sleeps > 10
+                ? "😐"
+                : sleeps > 5
+                  ? "🙂"
+                  : "🥳";
         document.title = `(${sleeps} Sleeps) Best Day Countdown`;
         document.getElementById("stat-sleeps").innerHTML =
           `<span style="font-size:1.5rem">${mood}</span> <span>${sleeps} sleeps left!</span>`;
