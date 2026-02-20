@@ -345,6 +345,21 @@
       .flight-track::after {
         right: -7px;
         border: 3px solid #ff8008;
+        /* Add the animation line here */
+        animation: radarPulse 2s infinite;
+      }
+
+      /* Add this new animation block right below it */
+      @keyframes radarPulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(255, 128, 8, 0.8);
+        }
+        70% {
+          box-shadow: 0 0 0 12px rgba(255, 128, 8, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(255, 128, 8, 0);
+        }
       }
 
       /* Origin and Destination Labels */
@@ -378,10 +393,51 @@
         left: 0%;
         font-size: 1.6rem;
         transition: left 1s linear;
-        /* Add rotate(45deg) or rotate(90deg) depending on your device's emoji font */
-        transform: translateX(-50%) rotate(45deg);
+        transform: translateX(-50%) rotate(45deg); /* Keeps your plane pointing right */
         z-index: 2;
         filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+        /* Add the gentle flying hover effect */
+        animation: flightBob 2.5s ease-in-out infinite;
+      }
+
+      /* Adds a little jet stream / cloud trail behind the plane */
+      .flight-plane::after {
+        content: "";
+        position: absolute;
+        /* Positioned near the tail of the plane emoji */
+        bottom: 5px;
+        left: -10px;
+        width: 18px;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        filter: blur(3px);
+        z-index: -1;
+        /* Flutters the exhaust */
+        animation: contrailPulse 0.6s infinite alternate;
+      }
+
+      /* The Up and Down Hovering Animation */
+      @keyframes flightBob {
+        0%,
+        100% {
+          margin-top: 0px;
+        }
+        50% {
+          margin-top: -4px;
+        } /* Floats up slightly */
+      }
+
+      /* The Exhaust Pulsing Animation */
+      @keyframes contrailPulse {
+        0% {
+          opacity: 0.4;
+          transform: scaleX(0.8) translateX(0);
+        }
+        100% {
+          opacity: 0.9;
+          transform: scaleX(1.5) translateX(-4px); /* Stretches the cloud backward */
+        }
       }
 
       .flight-status-text {
