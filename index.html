@@ -622,9 +622,9 @@
         document.getElementById("stat-arsenal").innerHTML = `<span style="font-size:1.5rem">⚽</span> <span>${gamesLeft} Arsenal games!</span>`;
 
         // --- Work Calculation ---
-        const totalSleepMs = calculateTotalSleepMs(now, TARGET_DATE_EXACT);
-        const awakeMs = diffMs > totalSleepMs ? diffMs - totalSleepMs : 0;
-
+        const awakeMs = calculateAwakeMs(now, TARGET_DATE_EXACT);
+        
+        
         let wDays = 0;
         let workScanner = new Date(now);
         workScanner.setDate(workScanner.getDate() + 1);
@@ -666,8 +666,9 @@
         const totalHours = Math.floor(totalDurationMs / (1000 * 60 * 60));
 
         // Total Awake Hours
-        const totalSleepMs = calculateTotalSleepMs(START_DATE, TARGET_DATE_EXACT);
-        const totalAwakeHours = Math.floor((totalDurationMs - totalSleepMs) / (1000 * 60 * 60));
+        const totalAwakeMs = calculateAwakeMs(START_DATE, TARGET_DATE_EXACT);
+        const totalAwakeHours = Math.floor(totalAwakeMs / (1000 * 60 * 60));
+        
 
         // Total Work Hours (Approximation)
         let totalWorkdays = 0;
@@ -685,25 +686,56 @@
         document.getElementById('sum-work').innerText = totalWorkHours;
       }
 
-      function calculateTotalSleepMs(start, end) {
-        let totalSleep = 0;
-        let current = new Date(start);
-        current.setHours(0, 0, 0, 0);
-
-        // Limit loop to prevent infinite hang if dates are wrong
-        let safety = 0;
-        while (current < end && safety < 5000) { 
-          let sleepStart = new Date(current); sleepStart.setHours(23);
-          let sleepEnd = new Date(current); sleepEnd.setDate(sleepEnd.getDate() + 1); sleepEnd.setHours(7);
-          const overlap_start = Math.max(start.getTime(), sleepStart.getTime());
-          const overlap_end = Math.min(end.getTime(), sleepEnd.getTime());
-          if (overlap_end > overlap_start) totalSleep += overlap_end - overlap_start;
-          current.setDate(current.getDate() + 1);
-          safety++;
+      function calculateAwakeMs(start, end) {
+        // Handle same-day edge case to avoid double counting
+        if (start.toDateString() === end.toDateString()) {
+           const awakeStart = new Date(start); awakeStart.setHours(7, 0, 0, 0);
+           const awakeEnd = new Date(start); awakeEnd.setHours(23, 0, 0, 0);
+           const overlapStart = Math.max(start.getTime(), awakeStart.getTime());
+           const overlapEnd = Math.min(end.getTime(), awakeEnd.getTime());
+           return Math.max(0, overlapEnd - overlapStart);
         }
-        return totalSleep;
-      }
 
+        // 1. Calculate full awake days between start and end
+        let awakeDays = 0;
+        let scanner = new Date(start);
+        scanner.setDate(scanner.getDate() + 1);
+        scanner.setHours(0, 0, 0, 0);
+        
+        const finalDayStart = new Date(end);
+        finalDayStart.setHours(0, 0, 0, 0);
+
+        while (scanner < finalDayStart) {
+          awakeDays++;
+          scanner.setDate(scanner.getDate() + 1);
+        }
+
+        // 2. Calculate today's remaining awake time
+        let firstDayAwakeMs = 0;
+        const awakeStart = new Date(start); awakeStart.setHours(7, 0, 0, 0);
+        const awakeEnd = new Date(start); awakeEnd.setHours(23, 0, 0, 0);
+        
+        if (start < awakeStart) {
+          firstDayAwakeMs = 16 * 3600 * 1000; // Full 16 hours
+        } else if (start >= awakeStart && start < awakeEnd) {
+          firstDayAwakeMs = awakeEnd - start; // Partial day remaining
+        }
+
+        // 3. Calculate the final day's awake time
+        let lastDayAwakeMs = 0;
+        const finalDayAwakeStart = new Date(end); finalDayAwakeStart.setHours(7, 0, 0, 0);
+        const finalDayAwakeEnd = new Date(end); finalDayAwakeEnd.setHours(23, 0, 0, 0);
+        
+        if (end > finalDayAwakeEnd) {
+          lastDayAwakeMs = 16 * 3600 * 1000; // Maxed out at 16 hours
+        } else if (end > finalDayAwakeStart) {
+          lastDayAwakeMs = end - finalDayAwakeStart; // Partial final day
+        }
+
+        // Sum it all together (16 hours per full day = 16 * 3600 * 1000 ms)
+        return (awakeDays * 16 * 3600 * 1000) + firstDayAwakeMs + lastDayAwakeMs;
+      }
+      
       function launchConfetti() {
         var duration = 5 * 1000;
         var animationEnd = Date.now() + duration;
@@ -771,4 +803,5 @@
     </script>
   </body>
 </html>
+
 
