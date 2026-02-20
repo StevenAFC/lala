@@ -458,11 +458,11 @@
       .flight-plane::after {
         content: "";
         position: absolute;
-        bottom: 2px;
+        bottom: -4px;
         left: -8px;
         width: 18px;
         height: 6px;
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(65, 62, 62, 0.267);
         border-radius: 10px;
         filter: blur(3px);
         z-index: -1;
@@ -499,11 +499,13 @@
       @keyframes contrailPulse {
         0% {
           opacity: 0.4;
-          transform: scaleX(0.8) translateX(0);
+          /* Added rotate(-45deg) before the scale and translate */
+          transform: rotate(-45deg) scaleX(0.8) translateX(0);
         }
         100% {
           opacity: 0.9;
-          transform: scaleX(1.5) translateX(-4px); /* Stretches the cloud backward */
+          /* Added rotate(-45deg) here too so it stays angled while stretching */
+          transform: rotate(-45deg) scaleX(1.5) translateX(-4px);
         }
       }
 
