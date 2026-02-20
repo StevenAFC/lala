@@ -267,16 +267,37 @@
 
       /* --- NEW FLIGHT TRACKER STYLES --- */
       .flight-card {
+        /* Replace your existing background with this */
         background: linear-gradient(
-          135deg,
-          rgba(255, 255, 255, 0.6),
-          rgba(255, 255, 255, 0.2)
+          -45deg,
+          rgba(255, 255, 255, 0.7),
+          rgba(255, 255, 255, 0.3),
+          rgba(96, 239, 255, 0.15),
+          rgba(246, 173, 85, 0.15)
         );
+        background-size: 300% 300%;
+        animation: cardSkyPan 15s ease infinite;
+
+        /* Keep your existing border, padding, radius, etc. */
         border: 1px solid rgba(255, 255, 255, 0.8);
         border-radius: 16px;
         padding: 20px 25px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         position: relative;
+        overflow: hidden; /* Keeps the background contained */
+      }
+
+      /* Add this with your other animations */
+      @keyframes cardSkyPan {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
       }
 
       .flight-header {
@@ -334,7 +355,7 @@
         height: 14px;
         border-radius: 50%;
         background: white;
-        z-index: 1;
+        z-index: 5;
       }
 
       .flight-track::before {
@@ -365,18 +386,26 @@
       /* Origin and Destination Labels */
       .track-labels {
         position: absolute;
-        top: -22px;
+        top: -26px;
         left: -5px;
         width: calc(100% + 10px);
         display: flex;
         justify-content: space-between;
-        font-size: 0.75rem;
-        font-weight: 800;
-        color: #718096;
+        font-size: 0.8rem;
+        font-weight: 900;
+        letter-spacing: 1px;
+        color: #2c3e50;
+        text-shadow: 0 2px 5px rgba(255, 255, 255, 0.8);
+      }
+
+      /* Make LHR pop a bit more since it's the destination */
+      .track-labels span:last-child {
+        color: #ff8008;
+        text-shadow: 0 0 10px rgba(255, 128, 8, 0.3);
       }
 
       #flight-progress-fill {
-        position: absolute;
+        position: relative;
         top: 0;
         left: 0;
         height: 100%;
@@ -385,6 +414,22 @@
         width: 0%;
         transition: width 1s linear;
         box-shadow: 0 0 10px rgba(255, 128, 8, 0.4);
+        z-index: 1;
+      }
+
+      #flight-progress-fill::after {
+        content: "";
+        position: absolute;
+        right: -4px; /* Hangs slightly off the end of the fill */
+        top: -2px; /* Centers it over the 8px tall track */
+        height: 12px;
+        width: 12px;
+        background: #ffffff;
+        border-radius: 50%;
+        box-shadow:
+          0 0 10px #ffffff,
+          0 0 20px var(--best-day-gold);
+        z-index: 2;
       }
 
       .flight-plane {
@@ -393,39 +438,61 @@
         left: 0%;
         font-size: 1.6rem;
         transition: left 1s linear;
-        transform: translateX(-50%) rotate(45deg); /* Keeps your plane pointing right */
-        z-index: 2;
-        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
-        /* Add the gentle flying hover effect */
+        transform: translateX(-25%) rotate(45deg);
+        z-index: 10;
+        /* Removed the old drop-shadow filter from here */
         animation: flightBob 2.5s ease-in-out infinite;
       }
 
-      /* Adds a little jet stream / cloud trail behind the plane */
+      /* THE NEW SHADOW EMOJI */
+      .flight-plane::before {
+        content: "✈️";
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -2; /* Tucks it behind the main plane and contrail */
+        animation: shadowBob 2.5s ease-in-out infinite;
+      }
+
+      /* Contrail code stays the same, just keeping it here for reference */
       .flight-plane::after {
         content: "";
         position: absolute;
-        /* Positioned near the tail of the plane emoji */
-        bottom: 5px;
-        left: -10px;
+        bottom: 2px;
+        left: -8px;
         width: 18px;
         height: 6px;
         background: rgba(255, 255, 255, 0.9);
         border-radius: 10px;
         filter: blur(3px);
         z-index: -1;
-        /* Flutters the exhaust */
         animation: contrailPulse 0.6s infinite alternate;
       }
 
-      /* The Up and Down Hovering Animation */
+      /* Plane Bobs Up */
       @keyframes flightBob {
         0%,
         100% {
           margin-top: 0px;
         }
         50% {
-          margin-top: -4px;
-        } /* Floats up slightly */
+          margin-top: -8px;
+        } /* Floats higher */
+      }
+
+      /* Shadow reacts to the bob */
+      @keyframes shadowBob {
+        0%,
+        100% {
+          /* Tighter, darker shadow when plane is low */
+          transform: translate(-2px, 4px) scale(1);
+          filter: grayscale(100%) brightness(0) opacity(0.4) blur(1px);
+        }
+        50% {
+          /* Shadow pushes further down and gets softer/smaller when plane floats up */
+          transform: translate(-8px, 14px) scale(0.85);
+          filter: grayscale(100%) brightness(0) opacity(0.15) blur(4px);
+        }
       }
 
       /* The Exhaust Pulsing Animation */
