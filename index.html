@@ -47,9 +47,15 @@
       }
 
       @keyframes gradientBG {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
       }
 
       .dashboard {
@@ -68,7 +74,9 @@
       }
 
       /* --- Progress Bars --- */
-      .bar-group { margin-bottom: 5px; }
+      .bar-group {
+        margin-bottom: 5px;
+      }
       .bar-label {
         font-weight: 800;
         margin-bottom: 5px;
@@ -94,8 +102,12 @@
         border-radius: 8px;
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
       }
-      #day-bar { background: var(--bar-day-color); }
-      #time-bar { background: var(--bar-time-color); }
+      #day-bar {
+        background: var(--bar-day-color);
+      }
+      #time-bar {
+        background: var(--bar-time-color);
+      }
 
       /* --- Calendar --- */
       .calendar-grid {
@@ -135,7 +147,11 @@
         box-shadow: none;
       }
       .cal-cell.past {
-        background: linear-gradient(135deg, var(--pop-green-start), var(--pop-green-end));
+        background: linear-gradient(
+          135deg,
+          var(--pop-green-start),
+          var(--pop-green-end)
+        );
         color: white;
         border: 1px solid rgba(255, 255, 255, 0.8);
         animation: softWiggle 3s infinite ease-in-out;
@@ -184,8 +200,12 @@
         color: #f6ad55;
         text-shadow: 0 0 10px rgba(246, 173, 85, 0.5);
       }
-      .pill-awake .timer-value { color: #63b3ed; }
-      .pill-total .timer-value { color: #e2e8f0; }
+      .pill-awake .timer-value {
+        color: #63b3ed;
+      }
+      .pill-total .timer-value {
+        color: #e2e8f0;
+      }
 
       /* --- Stats Grid (2x2 Layout) --- */
       .stats-grid {
@@ -208,21 +228,39 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         transition: transform 0.3s;
       }
-      .stat-card:hover { transform: translateY(-3px) scale(1.02); }
+      .stat-card:hover {
+        transform: translateY(-3px) scale(1.02);
+      }
       .stat-blue {
-        background: linear-gradient(135deg, rgba(227, 242, 253, 0.9), rgba(187, 222, 251, 0.95));
+        background: linear-gradient(
+          135deg,
+          rgba(227, 242, 253, 0.9),
+          rgba(187, 222, 251, 0.95)
+        );
         color: #0d47a1;
       }
       .stat-green {
-        background: linear-gradient(135deg, rgba(232, 245, 233, 0.9), rgba(200, 230, 201, 0.95));
+        background: linear-gradient(
+          135deg,
+          rgba(232, 245, 233, 0.9),
+          rgba(200, 230, 201, 0.95)
+        );
         color: #1b5e20;
       }
       .stat-gold {
-        background: linear-gradient(135deg, rgba(255, 248, 225, 0.9), rgba(255, 236, 179, 0.95));
+        background: linear-gradient(
+          135deg,
+          rgba(255, 248, 225, 0.9),
+          rgba(255, 236, 179, 0.95)
+        );
         color: #f57f17;
       }
       .stat-red {
-        background: linear-gradient(135deg, rgba(255, 235, 238, 0.95), rgba(255, 205, 210, 1));
+        background: linear-gradient(
+          135deg,
+          rgba(255, 235, 238, 0.95),
+          rgba(255, 205, 210, 1)
+        );
         color: #b71c1c;
         border: 1px solid #ef9a9a;
       }
@@ -230,7 +268,7 @@
       /* --- NEW SUMMARY FOOTER --- */
       .summary-section {
         background: rgba(45, 55, 72, 0.05);
-        border-top: 1px solid rgba(255,255,255,0.5);
+        border-top: 1px solid rgba(255, 255, 255, 0.5);
         border-radius: 14px;
         padding: 15px;
         display: grid;
@@ -238,7 +276,7 @@
         gap: 10px;
         margin-top: 10px;
       }
-      
+
       .summary-item {
         display: flex;
         flex-direction: column;
@@ -248,13 +286,13 @@
       }
 
       .summary-item:not(:last-child)::after {
-        content: '';
+        content: "";
         position: absolute;
         right: 0;
         top: 20%;
         height: 60%;
         width: 1px;
-        background: rgba(0,0,0,0.1);
+        background: rgba(0, 0, 0, 0.1);
       }
 
       .summary-label {
@@ -280,17 +318,39 @@
 
       /* --- Animations --- */
       @keyframes softWiggle {
-        0%, 100% { transform: rotate(0deg); }
-        2% { transform: rotate(-3deg); }
-        4% { transform: rotate(3deg); }
-        6% { transform: rotate(-3deg); }
-        8% { transform: rotate(3deg); }
-        10% { transform: rotate(0deg); }
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        2% {
+          transform: rotate(-3deg);
+        }
+        4% {
+          transform: rotate(3deg);
+        }
+        6% {
+          transform: rotate(-3deg);
+        }
+        8% {
+          transform: rotate(3deg);
+        }
+        10% {
+          transform: rotate(0deg);
+        }
       }
       @keyframes todayPulse {
-        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246, 173, 85, 0.7); }
-        70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(246, 173, 85, 0); }
-        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246, 173, 85, 0); }
+        0% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(246, 173, 85, 0.7);
+        }
+        70% {
+          transform: scale(1.05);
+          box-shadow: 0 0 0 10px rgba(246, 173, 85, 0);
+        }
+        100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(246, 173, 85, 0);
+        }
       }
       .cal-cell.today {
         background: white;
@@ -302,8 +362,14 @@
         background: #fc8181;
         color: white;
       }
-      .date-num { font-size: 0.8rem; font-weight: bold; }
-      .status-icon { font-size: 1.1rem; margin-top: 1px; }
+      .date-num {
+        font-size: 0.8rem;
+        font-weight: bold;
+      }
+      .status-icon {
+        font-size: 1.1rem;
+        margin-top: 1px;
+      }
 
       /* --- Digit Animation Helpers --- */
       .digit-group {
@@ -315,39 +381,109 @@
         overflow: hidden;
         vertical-align: middle;
       }
-      .digit-group[data-value=" "] { visibility: hidden; }
+      .digit-group[data-value=" "] {
+        visibility: hidden;
+      }
       .digit-group span {
         display: block;
         position: absolute;
-        left: 0; right: 0; text-align: center;
+        left: 0;
+        right: 0;
+        text-align: center;
       }
-      .digit-group span.rolling-up { animation: slide-up 0.5s ease-in-out forwards; }
+      .digit-group span.rolling-up {
+        animation: slide-up 0.5s ease-in-out forwards;
+      }
       .digit-group span.rolling-up::before {
         content: attr(data-new-val);
         position: absolute;
-        left: 0; right: 0; top: 100%;
+        left: 0;
+        right: 0;
+        top: 100%;
       }
       @keyframes slide-up {
-        from { transform: translateY(0); }
-        to { transform: translateY(-100%); }
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(-100%);
+        }
       }
 
       /* --- Mobile --- */
       @media (max-width: 650px) {
-        body { display: block; overflow-y: auto; height: auto;}
-        .dashboard { padding: 15px; height: auto; }
-        .stats-grid { grid-template-columns: 1fr; }
-        .timer-container { grid-template-columns: 1fr; gap: 10px; }
-        .timer-value { font-size: 1.8rem; }
-        .cal-cell { height: 45px; }
-        
+        body {
+          display: block;
+          overflow-y: auto;
+          height: auto;
+        }
+        .dashboard {
+          padding: 15px;
+          height: auto;
+        }
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+        .timer-container {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+        .timer-value {
+          font-size: 1.8rem;
+        }
+        .cal-cell {
+          height: 45px;
+        }
+
         /* Summary Grid on Mobile becomes 2x2 */
         .summary-section {
           grid-template-columns: 1fr 1fr;
           gap: 20px 10px;
         }
-        .summary-item:nth-child(2)::after { display: none; } /* Hide divider on row 1 end */
-        .summary-item:not(:last-child)::after { display: none; } /* Actually remove all dividers on mobile for cleaner look */
+        .summary-item:nth-child(2)::after {
+          display: none;
+        } /* Hide divider on row 1 end */
+        .summary-item:not(:last-child)::after {
+          display: none;
+        } /* Actually remove all dividers on mobile for cleaner look */
+      }
+
+      /* --- Flight Tracker (Animated Plane) --- */
+      .flight-track {
+        position: relative;
+        height: 8px; /* Made it slightly thicker */
+        background: rgba(
+          0,
+          0,
+          0,
+          0.1
+        ); /* Darker groove instead of faint white */
+        border-radius: 4px;
+        margin: 20px 10px 15px 10px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15); /* Adds a little depth */
+        border: 1px solid rgba(255, 255, 255, 0.4); /* Soft white edge for contrast */
+      }
+      #flight-progress-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: linear-gradient(90deg, var(--best-day-gold), #ff8008);
+        border-radius: 3px;
+        width: 0%;
+        transition: width 1s linear;
+      }
+      .flight-plane {
+        position: absolute;
+        top: -15px; /* Centers the plane vertically over the line */
+        left: 0%;
+        font-size: 1.6rem;
+        transition: left 1s linear;
+        transform: translateX(
+          -50%
+        ); /* Keeps the center of the plane on the exact percentage */
+        z-index: 2;
+        filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.2));
       }
     </style>
   </head>
@@ -385,26 +521,52 @@
         <div class="stat-card stat-gold" id="stat-milestone">Loading...</div>
         <div class="stat-card stat-red" id="stat-arsenal">Loading...</div>
       </div>
-      
-      <div class="summary-section">
-        <div class="summary-item">
-            <div class="summary-label">Total Duration</div>
-            <div class="summary-val"><span id="sum-days">0</span> <span class="summary-sub">Days</span></div>
+
+      <div class="flight-card">
+        <div class="flight-header">
+          <span>✈️ TG916 (BKK ➡️ LHR)</span>
+          <a
+            href="https://www.flightradar24.com/data/flights/tg916"
+            target="_blank"
+            class="flight-link"
+            >Live Map</a
+          >
         </div>
-        <div class="summary-item">
-            <div class="summary-label">Total Hours</div>
-            <div class="summary-val"><span id="sum-hours">0</span> <span class="summary-sub">hrs</span></div>
+        <div class="flight-track">
+          <div id="flight-progress-fill"></div>
+          <div id="flight-plane" class="flight-plane">✈️</div>
         </div>
-        <div class="summary-item">
-            <div class="summary-label">Awake Time</div>
-            <div class="summary-val"><span id="sum-awake">0</span> <span class="summary-sub">hrs</span></div>
-        </div>
-        <div class="summary-item">
-            <div class="summary-label">Est. Work</div>
-            <div class="summary-val">~<span id="sum-work">0</span> <span class="summary-sub">hrs</span></div>
+        <div class="flight-status-text" id="flight-status">
+          Loading flight data...
         </div>
       </div>
-      
+
+      <div class="summary-section">
+        <div class="summary-item">
+          <div class="summary-label">Total Duration</div>
+          <div class="summary-val">
+            <span id="sum-days">0</span> <span class="summary-sub">Days</span>
+          </div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Total Hours</div>
+          <div class="summary-val">
+            <span id="sum-hours">0</span> <span class="summary-sub">hrs</span>
+          </div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Awake Time</div>
+          <div class="summary-val">
+            <span id="sum-awake">0</span> <span class="summary-sub">hrs</span>
+          </div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Est. Work</div>
+          <div class="summary-val">
+            ~<span id="sum-work">0</span> <span class="summary-sub">hrs</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -418,6 +580,8 @@
         new Date(2026, 1, 18, 20, 0),
         new Date(2026, 1, 22, 16, 30),
       ];
+      const FLIGHT_DEPARTURE = new Date("2026-02-24T06:20:00Z"); // 06:20 GMT
+      const FLIGHT_ARRIVAL = new Date("2026-02-24T19:35:00Z"); // 19:35 GMT
 
       let confettiLaunched = false;
       let today = new Date().toDateString();
@@ -458,7 +622,7 @@
           for (let i = 0; i < 4; i++) {
             html += `<div class="digit-group hours" id="group-${type}-h-${i}" data-value=" "><span id="${type}-h-${i}"> </span></div>`;
           }
-          html += '<span class="unit">h </span>'; 
+          html += '<span class="unit">h </span>';
 
           for (let i = 0; i < 2; i++) {
             html += `<div class="digit-group"><span id="${type}-m-${i}">0</span></div>`;
@@ -496,7 +660,9 @@
           element.removeAttribute("data-new-val");
         };
 
-        element.addEventListener("animationend", handleAnimationEnd, { once: true });
+        element.addEventListener("animationend", handleAnimationEnd, {
+          once: true,
+        });
         setTimeout(handleAnimationEnd, 550);
       }
 
@@ -508,8 +674,12 @@
           const digitGroup = document.getElementById(id).parentElement;
           if (digitGroup) digitGroup.dataset.value = digit;
         });
-        newTimeDigits.m.forEach((digit, i) => updateSpan(`${type}-m-${i}`, prevTimeDigits.m[i], digit));
-        newTimeDigits.s.forEach((digit, i) => updateSpan(`${type}-s-${i}`, prevTimeDigits.s[i], digit));
+        newTimeDigits.m.forEach((digit, i) =>
+          updateSpan(`${type}-m-${i}`, prevTimeDigits.m[i], digit),
+        );
+        newTimeDigits.s.forEach((digit, i) =>
+          updateSpan(`${type}-s-${i}`, prevTimeDigits.s[i], digit),
+        );
         previousTimes[type] = newTimeDigits;
       }
 
@@ -552,21 +722,33 @@
 
         const totalDurationMs = TARGET_DATE_EXACT - START_DATE;
         const elapsedMs = now - START_DATE;
-        const timePct = Math.min(100, Math.max(0, (elapsedMs / totalDurationMs) * 100));
+        const timePct = Math.min(
+          100,
+          Math.max(0, (elapsedMs / totalDurationMs) * 100),
+        );
 
         const nowMidnight = new Date(now);
         nowMidnight.setHours(0, 0, 0, 0);
-        const totalDays = Math.round((TARGET_DATE_MATH - START_DATE) / (1000 * 60 * 60 * 24));
-        const daysPassed = Math.round((nowMidnight - START_DATE) / (1000 * 60 * 60 * 24));
-        const dayPct = Math.min(100, Math.max(0, (daysPassed / totalDays) * 100));
+        const totalDays = Math.round(
+          (TARGET_DATE_MATH - START_DATE) / (1000 * 60 * 60 * 24),
+        );
+        const daysPassed = Math.round(
+          (nowMidnight - START_DATE) / (1000 * 60 * 60 * 24),
+        );
+        const dayPct = Math.min(
+          100,
+          Math.max(0, (daysPassed / totalDays) * 100),
+        );
 
         const timeInverse = 100 - timePct;
         document.getElementById("time-bar").style.width = timePct + "%";
-        document.getElementById("time-percent").innerText = timePct.toFixed(2) + "% (" + timeInverse.toFixed(2) + "%)";
+        document.getElementById("time-percent").innerText =
+          timePct.toFixed(2) + "% (" + timeInverse.toFixed(2) + "%)";
 
         const dayInverse = 100 - dayPct;
         document.getElementById("day-bar").style.width = dayPct + "%";
-        document.getElementById("day-percent").innerText = dayPct.toFixed(2) + "% (" + dayInverse.toFixed(2) + "%)";
+        document.getElementById("day-percent").innerText =
+          dayPct.toFixed(2) + "% (" + dayInverse.toFixed(2) + "%)";
 
         let sleeps = 0;
         let counter = new Date(now);
@@ -579,11 +761,22 @@
           counter.setDate(counter.getDate() + 1);
         }
 
-        const mood = sleeps > 25 ? "😭" : sleeps > 15 ? "😩" : sleeps > 10 ? "😐" : sleeps > 5 ? "🙂" : "🥳";
+        const mood =
+          sleeps > 25
+            ? "😭"
+            : sleeps > 15
+              ? "😩"
+              : sleeps > 10
+                ? "😐"
+                : sleeps > 5
+                  ? "🙂"
+                  : "🥳";
         document.title = `(${sleeps} Sleeps) Best Day Countdown`;
-        document.getElementById("stat-sleeps").innerHTML = `<span style="font-size:1.5rem">${mood}</span> <span>${sleeps} sleeps left!</span>`;
+        document.getElementById("stat-sleeps").innerHTML =
+          `<span style="font-size:1.5rem">${mood}</span> <span>${sleeps} sleeps left!</span>`;
 
-        let thurs = 0, sats = 0;
+        let thurs = 0,
+          sats = 0;
         let scanner = new Date(now);
         scanner.setHours(0, 0, 0, 0);
         for (let i = 1; i <= sleeps; i++) {
@@ -592,7 +785,8 @@
           if (scanner.getDay() === 6) sats++;
         }
         thurs--; // Adjustment based on original logic
-        document.getElementById("stat-weekends").innerHTML = `<span style="font-size:1.5rem">📅</span> <span>${thurs} Thursday(s) & ${sats} Weekend(s)</span>`;
+        document.getElementById("stat-weekends").innerHTML =
+          `<span style="font-size:1.5rem">📅</span> <span>${thurs} Thursday(s) & ${sats} Weekend(s)</span>`;
 
         const milestones = [
           { p: 0, t: "Started" },
@@ -604,7 +798,6 @@
           { p: 40, t: "40% Complete" },
           { p: 50, t: "Midpoint" },
           { p: 60, t: "60% Complete" },
-          { p: 67, t: "Two Thirds!" },
           { p: 70, t: "70% Complete" },
           { p: 75, t: "Home Stretch" },
           { p: 80, t: "80% Complete" },
@@ -612,19 +805,23 @@
           { p: 100, t: "Complete" },
         ];
         let mileText = milestones[0].t;
-        milestones.forEach((m) => { if (timePct >= m.p) mileText = m.t; });
-        document.getElementById("stat-milestone").innerHTML = `<span style="font-size:1.5rem">📈</span> <span>${mileText}</span>`;
+        milestones.forEach((m) => {
+          if (timePct >= m.p) mileText = m.t;
+        });
+        document.getElementById("stat-milestone").innerHTML =
+          `<span style="font-size:1.5rem">📈</span> <span>${mileText}</span>`;
 
         const gamesLeft = ARSENAL_GAMES.filter((gameStartTime) => {
           const gameEndTime = new Date(gameStartTime.getTime() + 105 * 60000);
           return gameEndTime > now;
         }).length;
-        document.getElementById("stat-arsenal").innerHTML = `<span style="font-size:1.5rem">⚽</span> <span>${gamesLeft} Arsenal games!</span>`;
+        document.getElementById("stat-arsenal").innerHTML =
+          `<span style="font-size:1.5rem">⚽</span> <span>${gamesLeft} Arsenal games!</span>`;
 
         // --- Work Calculation ---
-        const awakeMs = calculateAwakeMs(now, TARGET_DATE_EXACT);
-        
-        
+        const totalSleepMs = calculateTotalSleepMs(now, TARGET_DATE_EXACT);
+        const awakeMs = diffMs > totalSleepMs ? diffMs - totalSleepMs : 0;
+
         let wDays = 0;
         let workScanner = new Date(now);
         workScanner.setDate(workScanner.getDate() + 1);
@@ -640,17 +837,22 @@
 
         let todayWorkMs = 0;
         if (now.getDay() !== 0 && now.getDay() !== 6) {
-          const workStart = new Date(now); workStart.setHours(9, 0, 0, 0);
-          const workEnd = new Date(now); workEnd.setHours(17, 30, 0, 0);
+          const workStart = new Date(now);
+          workStart.setHours(9, 0, 0, 0);
+          const workEnd = new Date(now);
+          workEnd.setHours(17, 30, 0, 0);
           if (now < workStart) todayWorkMs = 8.5 * 3600 * 1000;
-          else if (now >= workStart && now < workEnd) todayWorkMs = workEnd - now;
+          else if (now >= workStart && now < workEnd)
+            todayWorkMs = workEnd - now;
         }
 
         let lastDayWorkMs = 0;
         const finalDate = new Date(TARGET_DATE_EXACT);
         if (finalDate.getDay() !== 0 && finalDate.getDay() !== 6) {
-          const workStartOnFinalDay = new Date(finalDate); workStartOnFinalDay.setHours(9, 0, 0, 0);
-          if (finalDate > workStartOnFinalDay) lastDayWorkMs = finalDate - workStartOnFinalDay;
+          const workStartOnFinalDay = new Date(finalDate);
+          workStartOnFinalDay.setHours(9, 0, 0, 0);
+          if (finalDate > workStartOnFinalDay)
+            lastDayWorkMs = finalDate - workStartOnFinalDay;
         }
 
         const workMs = wDays * 8.5 * 3600 * 1000 + todayWorkMs + lastDayWorkMs;
@@ -658,6 +860,32 @@
         updateTimer("work", msToTimeDigits(workMs));
         updateTimer("awake", msToTimeDigits(awakeMs));
         updateTimer("total", msToTimeDigits(diffMs));
+
+        // --- Flight TG916 Tracking Logic ---
+        const flightStatus = document.getElementById("flight-status");
+        const flightPlane = document.getElementById("flight-plane");
+        const flightFill = document.getElementById("flight-progress-fill");
+
+        if (now < FLIGHT_DEPARTURE) {
+          flightStatus.innerText = "Scheduled: Departs Tuesday at 06:20 GMT";
+          flightPlane.style.left = "0%";
+          flightFill.style.width = "0%";
+        } else if (now >= FLIGHT_DEPARTURE && now <= FLIGHT_ARRIVAL) {
+          const flightTotal = FLIGHT_ARRIVAL - FLIGHT_DEPARTURE;
+          const flightElapsed = now - FLIGHT_DEPARTURE;
+          const flightPct = Math.min(
+            100,
+            Math.max(0, (flightElapsed / flightTotal) * 100),
+          );
+
+          flightStatus.innerText = `🛫 In the air! ${flightPct.toFixed(1)}% of the way to London!`;
+          flightPlane.style.left = flightPct + "%";
+          flightFill.style.width = flightPct + "%";
+        } else {
+          flightStatus.innerText = "🛬 Landed! Go get her!";
+          flightPlane.style.left = "100%";
+          flightFill.style.width = "100%";
+        }
       }
 
       function setTotalDuration() {
@@ -666,76 +894,53 @@
         const totalHours = Math.floor(totalDurationMs / (1000 * 60 * 60));
 
         // Total Awake Hours
-        const totalAwakeMs = calculateAwakeMs(START_DATE, TARGET_DATE_EXACT);
-        const totalAwakeHours = Math.floor(totalAwakeMs / (1000 * 60 * 60));
-        
+        const totalSleepMs = calculateTotalSleepMs(
+          START_DATE,
+          TARGET_DATE_EXACT,
+        );
+        const totalAwakeHours = Math.floor(
+          (totalDurationMs - totalSleepMs) / (1000 * 60 * 60),
+        );
 
         // Total Work Hours (Approximation)
         let totalWorkdays = 0;
         let currentDate = new Date(START_DATE);
         while (currentDate < TARGET_DATE_MATH) {
-            const day = currentDate.getDay();
-            if (day !== 0 && day !== 6) totalWorkdays++;
-            currentDate.setDate(currentDate.getDate() + 1);
+          const day = currentDate.getDay();
+          if (day !== 0 && day !== 6) totalWorkdays++;
+          currentDate.setDate(currentDate.getDate() + 1);
         }
         const totalWorkHours = Math.round(totalWorkdays * 8.5);
 
-        document.getElementById('sum-days').innerText = totalDays;
-        document.getElementById('sum-hours').innerText = totalHours;
-        document.getElementById('sum-awake').innerText = totalAwakeHours;
-        document.getElementById('sum-work').innerText = totalWorkHours;
+        document.getElementById("sum-days").innerText = totalDays;
+        document.getElementById("sum-hours").innerText = totalHours;
+        document.getElementById("sum-awake").innerText = totalAwakeHours;
+        document.getElementById("sum-work").innerText = totalWorkHours;
       }
 
-      function calculateAwakeMs(start, end) {
-        // Handle same-day edge case to avoid double counting
-        if (start.toDateString() === end.toDateString()) {
-           const awakeStart = new Date(start); awakeStart.setHours(7, 0, 0, 0);
-           const awakeEnd = new Date(start); awakeEnd.setHours(23, 0, 0, 0);
-           const overlapStart = Math.max(start.getTime(), awakeStart.getTime());
-           const overlapEnd = Math.min(end.getTime(), awakeEnd.getTime());
-           return Math.max(0, overlapEnd - overlapStart);
+      function calculateTotalSleepMs(start, end) {
+        let totalSleep = 0;
+        let current = new Date(start);
+        current.setHours(0, 0, 0, 0);
+
+        // Limit loop to prevent infinite hang if dates are wrong
+        let safety = 0;
+        while (current < end && safety < 5000) {
+          let sleepStart = new Date(current);
+          sleepStart.setHours(23);
+          let sleepEnd = new Date(current);
+          sleepEnd.setDate(sleepEnd.getDate() + 1);
+          sleepEnd.setHours(7);
+          const overlap_start = Math.max(start.getTime(), sleepStart.getTime());
+          const overlap_end = Math.min(end.getTime(), sleepEnd.getTime());
+          if (overlap_end > overlap_start)
+            totalSleep += overlap_end - overlap_start;
+          current.setDate(current.getDate() + 1);
+          safety++;
         }
-
-        // 1. Calculate full awake days between start and end
-        let awakeDays = 0;
-        let scanner = new Date(start);
-        scanner.setDate(scanner.getDate() + 1);
-        scanner.setHours(0, 0, 0, 0);
-        
-        const finalDayStart = new Date(end);
-        finalDayStart.setHours(0, 0, 0, 0);
-
-        while (scanner < finalDayStart) {
-          awakeDays++;
-          scanner.setDate(scanner.getDate() + 1);
-        }
-
-        // 2. Calculate today's remaining awake time
-        let firstDayAwakeMs = 0;
-        const awakeStart = new Date(start); awakeStart.setHours(7, 0, 0, 0);
-        const awakeEnd = new Date(start); awakeEnd.setHours(23, 0, 0, 0);
-        
-        if (start < awakeStart) {
-          firstDayAwakeMs = 16 * 3600 * 1000; // Full 16 hours
-        } else if (start >= awakeStart && start < awakeEnd) {
-          firstDayAwakeMs = awakeEnd - start; // Partial day remaining
-        }
-
-        // 3. Calculate the final day's awake time
-        let lastDayAwakeMs = 0;
-        const finalDayAwakeStart = new Date(end); finalDayAwakeStart.setHours(7, 0, 0, 0);
-        const finalDayAwakeEnd = new Date(end); finalDayAwakeEnd.setHours(23, 0, 0, 0);
-        
-        if (end > finalDayAwakeEnd) {
-          lastDayAwakeMs = 16 * 3600 * 1000; // Maxed out at 16 hours
-        } else if (end > finalDayAwakeStart) {
-          lastDayAwakeMs = end - finalDayAwakeStart; // Partial final day
-        }
-
-        // Sum it all together (16 hours per full day = 16 * 3600 * 1000 ms)
-        return (awakeDays * 16 * 3600 * 1000) + firstDayAwakeMs + lastDayAwakeMs;
+        return totalSleep;
       }
-      
+
       function launchConfetti() {
         var duration = 5 * 1000;
         var animationEnd = Date.now() + duration;
@@ -744,7 +949,12 @@
           var timeLeft = animationEnd - Date.now();
           if (timeLeft <= 0) return clearInterval(interval);
           var particleCount = 50 * (timeLeft / duration);
-          confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 } }));
+          confetti(
+            Object.assign({}, defaults, {
+              particleCount,
+              origin: { x: Math.random(), y: Math.random() - 0.2 },
+            }),
+          );
         }, 250);
       }
 
@@ -772,16 +982,18 @@
           el.className = "cal-cell";
           let isPast = cur < new Date().setHours(0, 0, 0, 0);
           let isToday = cur.toDateString() === new Date().toDateString();
-          let isArsenal = ARSENAL_GAMES.some((g) => g.toDateString() === cur.toDateString());
+          let isArsenal = ARSENAL_GAMES.some(
+            (g) => g.toDateString() === cur.toDateString(),
+          );
 
           if (isPast) {
             el.classList.add("past");
             el.innerHTML = `<span class="check-mark">✔</span>`;
           } else if (isToday) {
             el.classList.add("today");
-            el.innerHTML = isArsenal 
-                ? `<span class="date-num">${cur.getDate()}</span><span class="status-icon">⚽</span>`
-                : `<span class="date-num">${cur.getDate()}</span><span class="status-icon">🚀</span>`;
+            el.innerHTML = isArsenal
+              ? `<span class="date-num">${cur.getDate()}</span><span class="status-icon">⚽</span>`
+              : `<span class="date-num">${cur.getDate()}</span><span class="status-icon">🚀</span>`;
           } else {
             el.innerHTML = `<span class="date-num">${cur.getDate()}</span>`;
             if (isArsenal) {
@@ -803,5 +1015,3 @@
     </script>
   </body>
 </html>
-
-
