@@ -98,7 +98,6 @@
       .progress-fill {
         height: 100%;
         width: 0%;
-        transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
         border-radius: 8px;
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
       }
@@ -1220,13 +1219,15 @@
         }
       }
 
+      function tick() {
+        update(); // Runs your exact math and DOM updates
+        requestAnimationFrame(tick); // Tells the browser to run this again on the next frame
+      }
+
+      requestAnimationFrame(tick);
+
       renderCal();
       setTotalDuration();
-      setInterval(update, 1000);
-      update();
     </script>
   </body>
 </html>
-
-
-
