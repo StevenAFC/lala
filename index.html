@@ -87,6 +87,14 @@
         text-transform: uppercase;
         color: #4a5568;
       }
+      #day-percent,
+      #time-percent {
+        font-family: Consolas, monospace; /* Added a fallback just in case! */
+        font-weight: 900; /* Forces the absolute heaviest bold available */
+        font-size: 0.8rem; /* Bumped up just a tiny fraction so the bold reads better */
+        letter-spacing: 0;
+        color: #2d3748; /* Darker slate color to make the thickness pop */
+      }
       .progress-container {
         height: 16px;
         background: rgba(255, 255, 255, 0.6);
@@ -1231,4 +1239,3 @@
     </script>
   </body>
 </html>
-
