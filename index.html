@@ -46,6 +46,122 @@
         overflow-y: auto;
       }
 
+      body.night-mode {
+        --glass-bg: rgba(20, 25, 40, 0.85);
+        --text-color: #e2e8f0;
+        --glass-border: rgba(255, 255, 255, 0.1);
+        filter: brightness(0.85); /* Subtly dims the vibrant background */
+      }
+      body.night-mode .dashboard,
+      body.night-mode .flight-card {
+        color: #e2e8f0;
+      }
+      body.night-mode .bar-label,
+      body.night-mode .track-labels,
+      body.night-mode .flight-title,
+      body.night-mode #day-percent,
+      body.night-mode #time-percent {
+        color: #e2e8f0; /* Makes text light gray instead of dark slate */
+      }
+
+      /* =========================================
+         🌙 NIGHT MODE OVERRIDES FOR ALL ELEMENTS
+         ========================================= */
+
+      /* 1. Dual Clocks */
+      body.night-mode .dual-clocks {
+        background: rgba(0, 0, 0, 0.3);
+        color: #e2e8f0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      /* 2. Calendar Grid */
+      body.night-mode .cal-cell {
+        background: rgba(255, 255, 255, 0.05);
+        color: #e2e8f0;
+        border-color: rgba(255, 255, 255, 0.05);
+      }
+      body.night-mode .cal-cell.weekend {
+        background: rgba(0, 0, 0, 0.2);
+        color: #a0aec0;
+      }
+      body.night-mode .cal-cell.today {
+        background: rgba(45, 55, 72, 0.8);
+        color: white;
+      }
+      body.night-mode .cal-header {
+        color: #a0aec0;
+      }
+
+      /* 3. Stats Grid (Swap Pastels for Rich Dark Tones) */
+      body.night-mode .stat-blue {
+        background: linear-gradient(
+          135deg,
+          rgba(13, 71, 161, 0.4),
+          rgba(25, 118, 210, 0.4)
+        );
+        color: #90caf9;
+      }
+      body.night-mode .stat-green {
+        background: linear-gradient(
+          135deg,
+          rgba(27, 94, 32, 0.4),
+          rgba(56, 142, 60, 0.4)
+        );
+        color: #a5d6a7;
+      }
+      body.night-mode .stat-gold {
+        background: linear-gradient(
+          135deg,
+          rgba(230, 81, 0, 0.4),
+          rgba(245, 124, 0, 0.4)
+        );
+        color: #ffb74d;
+      }
+      body.night-mode .stat-red {
+        background: linear-gradient(
+          135deg,
+          rgba(183, 28, 28, 0.4),
+          rgba(211, 47, 47, 0.4)
+        );
+        color: #ef9a9a;
+      }
+
+      /* 4. Flight Tracker */
+      body.night-mode .flight-card {
+        background: linear-gradient(
+          -45deg,
+          rgba(10, 15, 30, 0.7),
+          rgba(20, 25, 40, 0.8),
+          rgba(15, 30, 45, 0.6)
+        );
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+      body.night-mode .flight-status-text {
+        background: rgba(0, 0, 0, 0.4);
+        color: #e2e8f0;
+      }
+      body.night-mode .flight-track::before,
+      body.night-mode .flight-track::after {
+        background: #1a202c; /* Darkens the white origin/destination dots */
+      }
+
+      /* 5. Summary Footer */
+      body.night-mode .summary-section {
+        background: rgba(0, 0, 0, 0.2);
+        border-top-color: rgba(255, 255, 255, 0.1);
+      }
+      body.night-mode .summary-val {
+        color: #f7fafc;
+      }
+      body.night-mode .summary-label,
+      body.night-mode .summary-sub {
+        color: #a0aec0;
+      }
+      body.night-mode .summary-item:not(:last-child)::after {
+        background: rgba(255, 255, 255, 0.1); /* Softens the divider lines */
+      }
+
       @keyframes gradientBG {
         0% {
           background-position: 0% 50%;
@@ -56,6 +172,19 @@
         100% {
           background-position: 0% 50%;
         }
+      }
+
+      body.hyper-drive {
+        animation: gradientBG 5s ease infinite; /* 4x faster background! */
+      }
+      body.hyper-drive .pill-total {
+        background: linear-gradient(135deg, #f6ad55, #ed8936);
+        border: 2px solid #fff;
+        animation: pulseLive 2s infinite;
+      }
+      body.hyper-drive .pill-total .timer-value {
+        color: white;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
       }
 
       .dashboard {
@@ -75,7 +204,7 @@
 
       /* --- Progress Bars --- */
       .bar-group {
-        margin-bottom: 5px;
+        margin-bottom: 15px;
       }
       .bar-label {
         font-weight: 800;
@@ -89,11 +218,45 @@
       }
       #day-percent,
       #time-percent {
-        font-family: Consolas, monospace; /* Added a fallback just in case! */
-        font-weight: 900; /* Forces the absolute heaviest bold available */
-        font-size: 0.8rem; /* Bumped up just a tiny fraction so the bold reads better */
-        letter-spacing: 0;
-        color: #2d3748; /* Darker slate color to make the thickness pop */
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        /* A very soft, elegant frosted glass background */
+        background: rgba(255, 255, 255, 0.4);
+        padding: 4px 10px;
+        border-radius: 12px;
+        box-shadow:
+          inset 0 1px 2px rgba(255, 255, 255, 0.8),
+          0 2px 5px rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+
+      .pct-main {
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: #2d3748;
+      }
+
+      .pct-sub {
+        font-weight: 600;
+        font-size: 0.7rem;
+        color: #718096;
+        opacity: 0.85;
+      }
+
+      /* Keep it looking great when Night Mode triggers */
+      body.night-mode #day-percent,
+      body.night-mode #time-percent {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05);
+      }
+      body.night-mode .pct-main {
+        color: #f7fafc;
+      }
+      body.night-mode .pct-sub {
+        color: #a0aec0;
       }
       .progress-container {
         height: 16px;
@@ -217,59 +380,77 @@
       /* --- Stats Grid --- */
       .stats-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
+        grid-template-columns: repeat(2, 1fr); /* Forces exactly two columns */
+        gap: 16px; /* Wider, cleaner spacing between cards */
+        margin: 5px 0; /* Gives a little breathing room from the timer */
       }
+
       .stat-card {
-        padding: 12px;
-        border-radius: 14px;
+        padding: 18px 16px; /* Taller, more generous internal spacing */
+        border-radius: 16px; /* Slightly softer corners */
         text-align: center;
         font-weight: 700;
         font-size: 0.95rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        transition: transform 0.3s;
+        gap: 12px; /* Better spacing between the emoji and the text */
+
+        /* Soft, premium glass feel */
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.6);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
       }
+
+      @keyframes pulseLive {
+        0% {
+          box-shadow: 0 0 0 0 rgba(229, 58, 64, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 15px rgba(229, 58, 64, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(229, 58, 64, 0);
+        }
+      }
+      .stat-card.live-match {
+        background: linear-gradient(135deg, #e53a40 0%, #b31217 100%);
+        color: white;
+        border: 2px solid #ffcccc;
+        animation: pulseLive 1.5s infinite;
+      }
+
       .stat-card:hover {
         transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
       }
+
+      /* Make the emoji sizing consistent and clean */
+      .stat-card span:first-child {
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+
+      /* Restored Pastel Gradients */
       .stat-blue {
-        background: linear-gradient(
-          135deg,
-          rgba(227, 242, 253, 0.9),
-          rgba(187, 222, 251, 0.95)
-        );
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
         color: #0d47a1;
       }
       .stat-green {
-        background: linear-gradient(
-          135deg,
-          rgba(232, 245, 233, 0.9),
-          rgba(200, 230, 201, 0.95)
-        );
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
         color: #1b5e20;
       }
       .stat-gold {
-        background: linear-gradient(
-          135deg,
-          rgba(255, 248, 225, 0.9),
-          rgba(255, 236, 179, 0.95)
-        );
-        color: #f57f17;
+        background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        color: #d84315; /* Darkened slightly for perfect readability */
       }
       .stat-red {
-        background: linear-gradient(
-          135deg,
-          rgba(255, 235, 238, 0.95),
-          rgba(255, 205, 210, 1)
-        );
+        background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
         color: #b71c1c;
-        border: 1px solid #ef9a9a;
       }
 
       .flight-card {
@@ -795,6 +976,67 @@
           display: none;
         }
       }
+
+      .dual-clocks {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        font-family: ui-monospace, Consolas, monospace;
+        font-weight: 800;
+        color: #2d3748;
+        background: rgba(255, 255, 255, 0.5);
+        padding: 10px 20px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+      }
+      .clock span {
+        color: #f6ad55;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+      .clock-divider {
+        font-size: 0.8rem;
+        opacity: 0.6;
+      }
+
+      /* --- Staggered App Entrance --- */
+      @keyframes slideUpFade {
+        0% {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .dashboard > * {
+        animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+
+      /* Delay each section slightly so they cascade in */
+      .dashboard > *:nth-child(1) {
+        animation-delay: 0.1s;
+      } /* Bars */
+      .dashboard > *:nth-child(2) {
+        animation-delay: 0.2s;
+      } /* Calendar */
+      .dashboard > *:nth-child(3) {
+        animation-delay: 0.3s;
+      } /* Split Timer */
+      .dashboard > *:nth-child(4) {
+        animation-delay: 0.4s;
+      } /* Stats Grid */
+      .dashboard > *:nth-child(5) {
+        animation-delay: 0.5s;
+      } /* Clocks */
+      .dashboard > *:nth-child(6) {
+        animation-delay: 0.6s;
+      } /* Flight */
+      .dashboard > *:nth-child(7) {
+        animation-delay: 0.7s;
+      } /* Footer */
     </style>
   </head>
   <body>
@@ -832,6 +1074,12 @@
         <div class="stat-card stat-red" id="stat-arsenal">Loading...</div>
       </div>
 
+      <div class="dual-clocks">
+        <div class="clock">🇹🇭 BKK <span id="clock-bkk">00:00:00</span></div>
+        <div class="clock-divider">✈️</div>
+        <div class="clock">🇬🇧 LHR <span id="clock-lhr">00:00:00</span></div>
+      </div>
+
       <div class="flight-card">
         <div class="flight-header">
           <div class="flight-title">✈️ TG916</div>
@@ -842,6 +1090,7 @@
             >Live Map 📍</a
           >
         </div>
+
         <div class="flight-track">
           <div class="track-labels">
             <span>BKK</span>
@@ -859,6 +1108,7 @@
           Loading flight data...
         </div>
       </div>
+
       <div class="summary-section">
         <div class="summary-item">
           <div class="summary-label">Total Duration</div>
@@ -886,7 +1136,6 @@
         </div>
       </div>
     </div>
-
     <script>
       const START_DATE = new Date("2026-01-29T00:00:00");
       const TARGET_DATE_MATH = new Date("2026-02-26T00:00:00");
@@ -902,6 +1151,7 @@
       const FLIGHT_ARRIVAL = new Date("2026-02-24T19:35:00Z"); // 19:35 GMT
 
       let confettiLaunched = false;
+      let landingConfettiLaunched = false;
       let today = new Date().toDateString();
 
       // --- Variables for animated timer ---
@@ -914,6 +1164,14 @@
 
       function pad(n) {
         return n < 10 ? "0" + n : "" + n;
+      }
+
+      // BATTERY SAVER: Only updates the DOM if the content has actually changed
+      function smartUpdateDOM(id, newHTML) {
+        const el = document.getElementById(id);
+        if (el && el.innerHTML !== newHTML) {
+          el.innerHTML = newHTML;
+        }
       }
 
       function initTimers() {
@@ -1021,22 +1279,40 @@
           renderCal();
         }
 
+        // Dual Clocks (Using smart update)
+        smartUpdateDOM(
+          "clock-bkk",
+          now.toLocaleTimeString("en-GB", { timeZone: "Asia/Bangkok" }),
+        );
+        smartUpdateDOM(
+          "clock-lhr",
+          now.toLocaleTimeString("en-GB", { timeZone: "Europe/London" }),
+        );
+
         const diffMs = TARGET_DATE_EXACT - now;
 
         if (diffMs <= 0) {
-          document.getElementById("main-timer").innerHTML =
-            `<div class="timer-pill pill-work" style="grid-column: span 3;">
-                 <div class="timer-value">🚀 IT'S TIME!</div>
-             </div>`;
+          smartUpdateDOM(
+            "main-timer",
+            `<div class="timer-pill pill-work" style="grid-column: span 3;"><div class="timer-value">🚀 IT'S TIME!</div></div>`,
+          );
           document.title = "🎉 IT'S TIME! 🎉";
           if (!confettiLaunched) {
             launchConfetti();
             confettiLaunched = true;
           }
+          setFavicon("🎉");
           return;
         }
 
         initTimers();
+
+        const currentHour = now.getHours();
+        if (currentHour >= 20 || currentHour < 6) {
+          document.body.classList.add("night-mode");
+        } else {
+          document.body.classList.remove("night-mode");
+        }
 
         const totalDurationMs = TARGET_DATE_EXACT - START_DATE;
         const elapsedMs = now - START_DATE;
@@ -1060,20 +1336,23 @@
 
         const timeInverse = 100 - timePct;
         document.getElementById("time-bar").style.width = timePct + "%";
-        document.getElementById("time-percent").innerText =
-          timePct.toFixed(6) + "% (" + timeInverse.toFixed(6) + "%)";
+        smartUpdateDOM(
+          "time-percent",
+          `<span class="pct-main">${timePct.toFixed(6)}%</span><span class="pct-sub">(${timeInverse.toFixed(6)}%)</span>`,
+        );
 
         const dayInverse = 100 - dayPct;
         document.getElementById("day-bar").style.width = dayPct + "%";
-        document.getElementById("day-percent").innerText =
-          dayPct.toFixed(2) + "% (" + dayInverse.toFixed(2) + "%)";
+        smartUpdateDOM(
+          "day-percent",
+          `<span class="pct-main">${dayPct.toFixed(2)}%</span><span class="pct-sub">(${dayInverse.toFixed(2)}%)</span>`,
+        );
 
         let sleeps = 0;
         let counter = new Date(now);
         counter.setHours(7, 0, 0, 0);
-        if (now.getTime() >= counter.getTime()) {
+        if (now.getTime() >= counter.getTime())
           counter.setDate(counter.getDate() + 1);
-        }
         while (counter < TARGET_DATE_EXACT) {
           sleeps++;
           counter.setDate(counter.getDate() + 1);
@@ -1089,9 +1368,13 @@
                 : sleeps > 5
                   ? "🙂"
                   : "🥳";
+        const sleepWord = sleeps === 1 ? "sleep" : "sleeps";
+
         document.title = `(${sleeps} Sleeps) Best Day Countdown`;
-        document.getElementById("stat-sleeps").innerHTML =
-          `<span style="font-size:1.5rem">${mood}</span> <span>${sleeps} sleeps left!</span>`;
+        smartUpdateDOM(
+          "stat-sleeps",
+          `<span style="font-size:1.5rem">${mood}</span> <span>${sleeps} ${sleepWord} remaining!</span>`,
+        );
 
         let thurs = 0,
           sats = 0;
@@ -1103,8 +1386,13 @@
           if (scanner.getDay() === 6) sats++;
         }
         thurs--;
-        document.getElementById("stat-weekends").innerHTML =
-          `<span style="font-size:1.5rem">📅</span> <span>${thurs} Thursday(s) & ${sats} Weekend(s)</span>`;
+
+        const thursWord = thurs === 1 ? "Thursday" : "Thursdays";
+        const satsWord = sats === 1 ? "Weekend" : "Weekends";
+        smartUpdateDOM(
+          "stat-weekends",
+          `<span style="font-size:1.5rem">📅</span> <span>${thurs} ${thursWord} & ${sats} ${satsWord} left!</span>`,
+        );
 
         const milestones = [
           { p: 0, t: "Started" },
@@ -1126,17 +1414,67 @@
         milestones.forEach((m) => {
           if (timePct >= m.p) mileText = m.t;
         });
-        document.getElementById("stat-milestone").innerHTML =
-          `<span style="font-size:1.5rem">📈</span> <span>${mileText}</span>`;
+        smartUpdateDOM(
+          "stat-milestone",
+          `<span style="font-size:1.5rem">📈</span> <span>${mileText}</span>`,
+        );
 
-        const gamesLeft = ARSENAL_GAMES.filter((gameStartTime) => {
+        // --- Stat: Arsenal Games ---
+        let isLive = false;
+        const upcomingGames = ARSENAL_GAMES.filter((gameStartTime) => {
           const gameEndTime = new Date(gameStartTime.getTime() + 105 * 60000);
+          if (now >= gameStartTime && now <= gameEndTime) isLive = true;
           return gameEndTime > now;
-        }).length;
-        document.getElementById("stat-arsenal").innerHTML =
-          `<span style="font-size:1.5rem">⚽</span> <span>${gamesLeft} Arsenal games!</span>`;
+        });
 
-        // --- Work Calculation ---
+        const gamesLeft = upcomingGames.length;
+        const gameWord = gamesLeft === 1 ? "game" : "games";
+        const arsenalCard = document.getElementById("stat-arsenal");
+
+        if (isLive) {
+          if (!arsenalCard.classList.contains("live-match"))
+            arsenalCard.classList.add("live-match");
+          smartUpdateDOM(
+            "stat-arsenal",
+            `<span style="font-size:1.5rem">🔴</span> <span>MATCH LIVE!</span>`,
+          );
+        } else if (gamesLeft > 0) {
+          if (arsenalCard.classList.contains("live-match"))
+            arsenalCard.classList.remove("live-match");
+
+          const nextGame = upcomingGames[0];
+          const dayName = nextGame.toLocaleDateString("en-GB", {
+            weekday: "short",
+          });
+          const timeStr = nextGame.toLocaleTimeString("en-GB", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+
+          smartUpdateDOM(
+            "stat-arsenal",
+            `<div style="display:flex; flex-direction:column; align-items:center; line-height:1.2;">
+               <div style="display:flex; align-items:center; gap:8px;">
+                 <span style="font-size:1.5rem">⚽</span> <span>${gamesLeft} Arsenal ${gameWord}!</span>
+               </div>
+               <span style="font-size:0.65rem; opacity:0.8; font-weight:600; margin-top:2px;">Next: ${dayName} @ ${timeStr}</span>
+             </div>`,
+          );
+        } else {
+          // The graceful "Zero Games" state! Keeps the two-line height so the grid stays perfectly symmetrical.
+          if (arsenalCard.classList.contains("live-match"))
+            arsenalCard.classList.remove("live-match");
+          smartUpdateDOM(
+            "stat-arsenal",
+            `<div style="display:flex; flex-direction:column; align-items:center; line-height:1.2;">
+               <div style="display:flex; align-items:center; gap:8px;">
+                 <span style="font-size:1.5rem">🏁</span> <span>0 Arsenal games!</span>
+               </div>
+               <span style="font-size:0.65rem; opacity:0.8; font-weight:600; margin-top:2px;">All matches played</span>
+             </div>`,
+          );
+        }
+
         const totalSleepMs = calculateTotalSleepMs(now, TARGET_DATE_EXACT);
         const awakeMs = diffMs > totalSleepMs ? diffMs - totalSleepMs : 0;
 
@@ -1179,16 +1517,18 @@
         updateTimer("awake", msToTimeDigits(awakeMs));
         updateTimer("total", msToTimeDigits(diffMs));
 
-        // --- Flight TG916 Tracking Logic ---
         const flightStatus = document.getElementById("flight-status");
         const flightPlane = document.getElementById("flight-plane");
         const flightFill = document.getElementById("flight-progress-fill");
 
         if (now < FLIGHT_DEPARTURE) {
-          flightStatus.innerText = "Scheduled: Departs Tuesday at 06:20 GMT";
+          smartUpdateDOM(
+            "flight-status",
+            "Scheduled: Departs Tuesday at 06:20 GMT",
+          );
           flightPlane.style.left = "0%";
           flightFill.style.width = "0%";
-          flightPlane.classList.remove("is-flying"); // Grounded
+          flightPlane.classList.remove("is-flying");
         } else if (now >= FLIGHT_DEPARTURE && now <= FLIGHT_ARRIVAL) {
           const flightTotal = FLIGHT_ARRIVAL - FLIGHT_DEPARTURE;
           const flightElapsed = now - FLIGHT_DEPARTURE;
@@ -1197,16 +1537,35 @@
             Math.max(0, (flightElapsed / flightTotal) * 100),
           );
 
-          flightStatus.innerText = `🛫 In the air! ${flightPct.toFixed(1)}% of the way to London!`;
+          smartUpdateDOM(
+            "flight-status",
+            `🛫 In the air! ${flightPct.toFixed(1)}% of the way to London!`,
+          );
           flightPlane.style.left = flightPct + "%";
           flightFill.style.width = flightPct + "%";
-          flightPlane.classList.add("is-flying"); // Flying!
+          flightPlane.classList.add("is-flying");
+          setFavicon("✈️");
         } else {
-          flightStatus.innerText = "🛬 Landed! She's home!";
+          smartUpdateDOM("flight-status", "🛬 Landed! She's home!");
           flightPlane.style.left = "100%";
           flightFill.style.width = "100%";
-          flightPlane.classList.remove("is-flying"); // Grounded
+          flightPlane.classList.remove("is-flying");
+
+          // Fire a special blue and gold burst EXACTLY once when it lands
+          if (!landingConfettiLaunched && diffMs > 0) {
+            confetti({
+              particleCount: 150,
+              spread: 100,
+              origin: { y: 0.6 },
+              colors: ["#ff8008", "#63b3ed", "#ffffff"],
+            });
+            landingConfettiLaunched = true;
+          }
         }
+
+        if (diffMs < 24 * 60 * 60 * 1000)
+          document.body.classList.add("hyper-drive");
+        else document.body.classList.remove("hyper-drive");
       }
 
       function setTotalDuration() {
@@ -1214,7 +1573,6 @@
         const totalDays = Math.floor(totalDurationMs / (1000 * 60 * 60 * 24));
         const totalHours = Math.floor(totalDurationMs / (1000 * 60 * 60));
 
-        // Total Awake Hours
         const totalSleepMs = calculateTotalSleepMs(
           START_DATE,
           TARGET_DATE_EXACT,
@@ -1223,7 +1581,6 @@
           (totalDurationMs - totalSleepMs) / (1000 * 60 * 60),
         );
 
-        // Total Work Hours (Approximation)
         let totalWorkdays = 0;
         let currentDate = new Date(START_DATE);
         while (currentDate < TARGET_DATE_MATH) {
@@ -1233,10 +1590,10 @@
         }
         const totalWorkHours = Math.round(totalWorkdays * 8.5);
 
-        document.getElementById("sum-days").innerText = totalDays;
-        document.getElementById("sum-hours").innerText = totalHours;
-        document.getElementById("sum-awake").innerText = totalAwakeHours;
-        document.getElementById("sum-work").innerText = totalWorkHours;
+        smartUpdateDOM("sum-days", totalDays);
+        smartUpdateDOM("sum-hours", totalHours);
+        smartUpdateDOM("sum-awake", totalAwakeHours);
+        smartUpdateDOM("sum-work", totalWorkHours);
       }
 
       function calculateTotalSleepMs(start, end) {
@@ -1244,7 +1601,6 @@
         let current = new Date(start);
         current.setHours(0, 0, 0, 0);
 
-        // Limit loop to prevent infinite hang if dates are wrong
         let safety = 0;
         while (current < end && safety < 5000) {
           let sleepStart = new Date(current);
@@ -1279,6 +1635,21 @@
         }, 250);
       }
 
+      // CLICK CONFETTI FEATURE
+      document.addEventListener("click", (e) => {
+        if (e.target.closest(".stat-card") || e.target.closest(".cal-cell")) {
+          confetti({
+            particleCount: 30,
+            spread: 50,
+            origin: {
+              x: e.clientX / window.innerWidth,
+              y: e.clientY / window.innerHeight,
+            },
+            colors: ["#ff6b6b", "#4ecdc4", "#f6ad55"],
+          });
+        }
+      });
+
       function renderCal() {
         const grid = document.getElementById("calendar");
         grid.innerHTML = "";
@@ -1306,6 +1677,8 @@
           let isArsenal = ARSENAL_GAMES.some(
             (g) => g.toDateString() === cur.toDateString(),
           );
+          let isFlightDay =
+            cur.toDateString() === FLIGHT_DEPARTURE.toDateString(); // Add this line!
 
           if (isPast) {
             el.classList.add("past");
@@ -1320,9 +1693,27 @@
             if (isArsenal) {
               el.classList.add("arsenal");
               el.innerHTML += `<span class="status-icon">⚽</span>`;
+            } else if (isFlightDay) {
+              el.style.background = "linear-gradient(135deg, #f6ad55, #ed8936)";
+              el.style.color = "white";
+              el.innerHTML += `<span class="status-icon" style="animation: flightBob 2s infinite">✈️</span>`;
             } else if (cur.getDay() === 0 || cur.getDay() === 6) {
               el.classList.add("weekend");
             }
+          }
+          // Add Smart Tooltips
+          if (isArsenal) {
+            const match = ARSENAL_GAMES.find(
+              (g) => g.toDateString() === cur.toDateString(),
+            );
+            if (match)
+              el.title = `🔴 Arsenal Match @ ${match.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}`;
+          } else if (cur.toDateString() === FLIGHT_DEPARTURE.toDateString()) {
+            el.title = `✈️ Flight TG916 Departs @ 06:20 GMT`;
+          } else if (isToday) {
+            el.title = `📍 You are here`;
+          } else if (isPast) {
+            el.title = `✅ Day complete`;
           }
           grid.appendChild(el);
           cur.setDate(cur.getDate() + 1);
@@ -1330,12 +1721,71 @@
       }
 
       function tick() {
-        update(); // Runs your exact math and DOM updates
-        requestAnimationFrame(tick); // Tells the browser to run this again on the next frame
+        update();
+        setFavicon("⏳");
+
+        requestAnimationFrame(tick);
       }
 
-      requestAnimationFrame(tick);
+      function setFavicon(emoji) {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${emoji}</text></svg>`;
+        let link = document.querySelector("link[rel~='icon']");
+        if (!link) {
+          link = document.createElement("link");
+          link.rel = "icon";
+          document.head.appendChild(link);
+        }
+        link.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+      }
 
+      // --- 3D Hover Tilt Physics (Tuned for all cards) ---
+      let hoveredCard = null;
+
+      document.addEventListener("mousemove", (e) => {
+        const targetCard = e.target.closest(".stat-card,  .timer-pill");
+
+        // Reset if we move off a card
+        if (hoveredCard && hoveredCard !== targetCard) {
+          hoveredCard.style.transition =
+            "transform 0.4s ease-out, box-shadow 0.4s ease-out";
+          hoveredCard.style.transform =
+            "perspective(1500px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+          hoveredCard = null;
+        }
+
+        // Apply physics if we are on a card
+        if (targetCard) {
+          hoveredCard = targetCard;
+          const rect = targetCard.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+
+          // Tuned parameters depending on the card size
+          let maxTilt = 8;
+          let zoom = 1.03;
+
+          const rotateX = ((y - centerY) / centerY) * -maxTilt;
+          const rotateY = ((x - centerX) / centerX) * maxTilt;
+
+          targetCard.style.transition = "none";
+          targetCard.style.transform = `perspective(1500px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${zoom}, ${zoom}, ${zoom})`;
+        }
+      });
+
+      // Reset if mouse leaves the browser window entirely
+      document.addEventListener("mouseleave", () => {
+        if (hoveredCard) {
+          hoveredCard.style.transition =
+            "transform 0.4s ease-out, box-shadow 0.4s ease-out";
+          hoveredCard.style.transform =
+            "perspective(1500px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+          hoveredCard = null;
+        }
+      });
+
+      requestAnimationFrame(tick);
       renderCal();
       setTotalDuration();
     </script>
