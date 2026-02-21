@@ -304,6 +304,44 @@
         z-index: 2;
       }
 
+      .plasma-check polyline {
+        stroke-dasharray: 50;
+        stroke-dashoffset: 50;
+        animation: drawCheck 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)
+          forwards;
+      }
+
+      @keyframes drawCheck {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+
+      /* The idle "Mexican Wave" pop animation */
+      @keyframes idlePop {
+        0%,
+        80%,
+        100% {
+          transform: scale(1) rotate(0deg);
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+        }
+        85% {
+          /* Sudden massive jump and bright glow */
+          transform: scale(1.7) rotate(10deg);
+          filter: drop-shadow(0 0 15px #fff)
+            drop-shadow(0 0 25px var(--pop-green-start));
+          color: #fff;
+        }
+        90% {
+          /* Snappy recoil (squish) */
+          transform: scale(0.8) rotate(-5deg);
+        }
+        95% {
+          /* Final settle bounce */
+          transform: scale(1.1);
+        }
+      }
+
       /* Plasma physical throb animation */
       @keyframes plasmaPulse {
         0% {
@@ -501,47 +539,110 @@
         gap: 16px;
         margin: 5px 0;
       }
+      /* Base Stat Card Upgrade */
       .stat-card {
         padding: 18px 16px;
         border-radius: 16px;
         text-align: center;
-        font-weight: 700;
-        font-size: 0.95rem;
+        font-weight: 800;
+        font-size: 1rem;
         display: flex;
+        flex-direction: column; /* Stack emoji above text */
         align-items: center;
         justify-content: center;
-        gap: 12px;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 2px solid rgba(255, 255, 255, 0.6);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-        transition:
-          transform 0.2s ease,
-          box-shadow 0.2s ease;
+        gap: 8px;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
       }
-      .stat-card:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+
+      /* Add a "Shimmer" light effect that moves across the cards */
+      .stat-card::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        transform: rotate(45deg);
+        animation: statShimmer 4s infinite linear;
       }
-      .stat-card span:first-child {
-        font-size: 1.5rem;
-        line-height: 1;
+
+      @keyframes statShimmer {
+        0% {
+          transform: translateX(-150%) rotate(45deg);
+        }
+        100% {
+          transform: translateX(150%) rotate(45deg);
+        }
       }
+
+      /* Individual Colors - More Vibrant */
       .stat-blue {
-        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-        color: #0d47a1;
+        background: linear-gradient(
+          135deg,
+          rgba(30, 144, 255, 0.2),
+          rgba(0, 191, 255, 0.4)
+        );
+        color: #004e92;
+        border-color: #1e90ff;
       }
       .stat-green {
-        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        background: linear-gradient(
+          135deg,
+          rgba(50, 205, 50, 0.2),
+          rgba(0, 250, 154, 0.4)
+        );
         color: #1b5e20;
+        border-color: #32cd32;
       }
       .stat-gold {
-        background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
-        color: #d84315;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 215, 0, 0.2),
+          rgba(255, 165, 0, 0.4)
+        );
+        color: #7a5d00;
+        border-color: #ffd700;
       }
       .stat-red {
-        background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+        background: linear-gradient(
+          135deg,
+          rgba(255, 69, 0, 0.2),
+          rgba(220, 20, 60, 0.4)
+        );
         color: #b71c1c;
+        border-color: #ff4500;
+      }
+
+      /* THE "MISSION COMPLETE" STATE (When value is 0 or 100%) */
+      .stat-card.completed {
+        background: linear-gradient(135deg, #ffd700, #ff8c00) !important;
+        color: white !important;
+        border: 3px solid #fff !important;
+        box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
+        animation: missionCompletePulse 1.5s infinite alternate ease-in-out;
+      }
+
+      @keyframes missionCompletePulse {
+        from {
+          transform: scale(1);
+          box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        to {
+          transform: scale(1.05);
+          box-shadow: 0 0 30px rgba(255, 215, 0, 0.9);
+        }
       }
       @keyframes pulseLive {
         0% {
@@ -1321,40 +1422,22 @@
           counter.setDate(counter.getDate() + 1);
         }
 
-        const mood =
-          sleeps > 25
-            ? "😭"
-            : sleeps > 15
-              ? "😩"
-              : sleeps > 10
-                ? "😐"
-                : sleeps > 5
-                  ? "🙂"
-                  : "🥳";
         const sleepWord = sleeps === 1 ? "sleep" : "sleeps";
-        document.title = `(${sleeps} Sleeps) Best Day Countdown`;
-        smartUpdateDOM(
-          "stat-sleeps",
-          `<span style="font-size:1.5rem">${mood}</span> <span>${sleeps} ${sleepWord} remaining!</span>`,
-        );
+        const mood = sleeps > 5 ? "😴" : "🔥";
 
+        // Calculate Thursdays and Saturdays remaining
         let thurs = 0,
           sats = 0;
-        let scanner = new Date(now);
-        scanner.setHours(0, 0, 0, 0);
-        for (let i = 1; i <= sleeps; i++) {
-          scanner.setDate(scanner.getDate() + 1);
-          if (scanner.getDay() === 4) thurs++;
-          if (scanner.getDay() === 6) sats++;
+        let dayScanner = new Date(now);
+        while (dayScanner < TARGET_DATE_EXACT) {
+          if (dayScanner.getDay() === 4) thurs++; // 4 = Thursday
+          if (dayScanner.getDay() === 6) sats++; // 6 = Saturday
+          dayScanner.setDate(dayScanner.getDate() + 1);
         }
-        thurs--;
-        const thursWord = thurs === 1 ? "Thursday" : "Thursdays";
-        const satsWord = sats === 1 ? "Weekend" : "Weekends";
-        smartUpdateDOM(
-          "stat-weekends",
-          `<span style="font-size:1.5rem">📅</span> <span>${thurs} ${thursWord} & ${sats} ${satsWord} left!</span>`,
-        );
+        const thursWord = thurs === 1 ? "Thurs" : "Thursdays";
+        const satsWord = sats === 1 ? "Sat" : "Saturdays";
 
+        // Milestone text
         const milestones = [
           { p: 0, t: "Started" },
           { p: 10, t: "10% Complete" },
@@ -1371,64 +1454,89 @@
           { p: 90, t: "Almost There" },
           { p: 100, t: "Complete" },
         ];
+
         let mileText = milestones[0].t;
         milestones.forEach((m) => {
           if (timePct >= m.p) mileText = m.t;
         });
-        smartUpdateDOM(
-          "stat-milestone",
-          `<span style="font-size:1.5rem">📈</span> <span>${mileText}</span>`,
-        );
 
-        let isLive = false;
-        const upcomingGames = ARSENAL_GAMES.filter((gameStartTime) => {
-          const gameEndTime = new Date(gameStartTime.getTime() + 105 * 60000);
-          if (now >= gameStartTime && now <= gameEndTime) isLive = true;
-          return gameEndTime > now;
+        // Arsenal logic
+        const gamesLeft = ARSENAL_GAMES.filter((g) => g > now).length;
+        const isLive = ARSENAL_GAMES.some((g) => {
+          const end = new Date(g.getTime() + 105 * 60000); // Assume 105 mins match
+          return now >= g && now <= end;
         });
-
-        const gamesLeft = upcomingGames.length;
         const gameWord = gamesLeft === 1 ? "game" : "games";
-        const arsenalCard = document.getElementById("stat-arsenal");
 
-        if (isLive) {
-          if (!arsenalCard.classList.contains("live-match"))
-            arsenalCard.classList.add("live-match");
+        // 1. Sleeps Logic
+        const sleepCard = document.getElementById("stat-sleeps");
+        if (sleeps === 0) {
+          sleepCard.classList.add("completed");
           smartUpdateDOM(
-            "stat-arsenal",
-            `<span style="font-size:1.5rem">🔴</span> <span>MATCH LIVE!</span>`,
-          );
-        } else if (gamesLeft > 0) {
-          if (arsenalCard.classList.contains("live-match"))
-            arsenalCard.classList.remove("live-match");
-          const nextGame = upcomingGames[0];
-          const dayName = nextGame.toLocaleDateString("en-GB", {
-            weekday: "short",
-          });
-          const timeStr = nextGame.toLocaleTimeString("en-GB", {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-          smartUpdateDOM(
-            "stat-arsenal",
-            `<div style="display:flex; flex-direction:column; align-items:center; line-height:1.2;">
-               <div style="display:flex; align-items:center; gap:8px;">
-                 <span style="font-size:1.5rem">⚽</span> <span>${gamesLeft} Arsenal ${gameWord}!</span>
-               </div>
-               <span style="font-size:0.65rem; opacity:0.8; font-weight:600; margin-top:2px;">Next: ${dayName} @ ${timeStr}</span>
-             </div>`,
+            "stat-sleeps",
+            `<span>🎉</span> <span>NO MORE SLEEPS!</span>`,
           );
         } else {
-          if (arsenalCard.classList.contains("live-match"))
-            arsenalCard.classList.remove("live-match");
+          sleepCard.classList.remove("completed");
+          smartUpdateDOM(
+            "stat-sleeps",
+            `<span>${mood}</span> <span>${sleeps} ${sleepWord} remaining!</span>`,
+          );
+        }
+
+        // 2. Weekends Logic
+        const weekendCard = document.getElementById("stat-weekends");
+        if (thurs <= 0 && sats <= 0) {
+          weekendCard.classList.add("completed");
+          smartUpdateDOM(
+            "stat-weekends",
+            `<span>🥳</span><span>NO THURSDAYS OR WEEKENDS LEFT TO WAIT!</span>`,
+          );
+        } else {
+          weekendCard.classList.remove("completed");
+          smartUpdateDOM(
+            "stat-weekends",
+            `<span>📅</span> <span>${thurs} ${thursWord} & ${sats} ${satsWord} left!</span>`,
+          );
+        }
+
+        // 3. Milestone Logic
+        const mileCard = document.getElementById("stat-milestone");
+        if (timePct >= 100) {
+          mileCard.classList.add("completed");
+          smartUpdateDOM(
+            "stat-milestone",
+            `<span>🏆</span> <span>100% COMPLETE!</span>`,
+          );
+        } else {
+          mileCard.classList.remove("completed");
+          smartUpdateDOM(
+            "stat-milestone",
+            `<span>📈</span> <span>${mileText}</span>`,
+          );
+        }
+
+        // 4. Arsenal Logic
+        const arsenalCard = document.getElementById("stat-arsenal");
+        if (gamesLeft === 0 && !isLive) {
+          arsenalCard.classList.add("completed");
           smartUpdateDOM(
             "stat-arsenal",
-            `<div style="display:flex; flex-direction:column; align-items:center; line-height:1.2;">
-               <div style="display:flex; align-items:center; gap:8px;">
-                 <span style="font-size:1.5rem">🏁</span> <span>0 Arsenal games!</span>
-               </div>
-               <span style="font-size:0.65rem; opacity:0.8; font-weight:600; margin-top:2px;">All matches played</span>
-             </div>`,
+            `<span>🏁</span> <span>NO MORE MATCHES!</span>`,
+          );
+        } else if (isLive) {
+          arsenalCard.classList.add("live-match");
+          smartUpdateDOM(
+            "stat-arsenal",
+            `<span>🔴</span> <span>MATCH LIVE!</span>`,
+          );
+        } else {
+          arsenalCard.classList.remove("completed", "live-match");
+          smartUpdateDOM(
+            "stat-arsenal",
+            `<div style="display:flex; flex-direction:column; align-items:center;">
+                <div style="display:flex; align-items:center; gap:8px;"><span>⚽</span> <span>${gamesLeft} Arsenal ${gameWord} to go!</span></div>
+                <span style="font-size:0.65rem; opacity:0.8;">Next: Sun @ 16:30</span></div>`,
           );
         }
 
@@ -1656,6 +1764,13 @@
               (todayMidnight - cur) / (1000 * 60 * 60 * 24),
             );
 
+            // Re-using START_DATE to figure out the sequence for the animation cascade
+            let daysFromStart = Math.round(
+              (cur - START_DATE) / (1000 * 60 * 60 * 24),
+            );
+            let staggerDelay = daysFromStart * 0.04;
+            let idleDelay = staggerDelay + 2; // Wait 2s for the entrance to finish
+
             // The tail cools down over 12 days. 1 = Yesterday (Hottest), 0 = 12+ days ago (Cold Ash)
             let heatRatio = Math.max(0, 1 - (daysFromToday - 1) / 20);
 
@@ -1683,8 +1798,8 @@
             el.style.animation = `plasmaPulse ${pulseDuration}s infinite alternate ease-in-out ${randomDelay}s`;
 
             el.innerHTML = `
-              <svg class="plasma-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: ${0.3 + heatRatio * 0.7}">
-                <polyline points="20 6 9 17 4 12"></polyline>
+              <svg class="plasma-check" style="animation: idlePop 6s ease-in-out infinite ${idleDelay}s; transform-origin: center;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" style="animation-delay: ${staggerDelay}s"></polyline>
               </svg>
             `;
           } else if (isToday) {
