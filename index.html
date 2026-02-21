@@ -447,17 +447,26 @@
         transition: left 1s linear;
         transform: translateX(-25%) rotate(45deg);
         z-index: 10;
-        /* Removed the old drop-shadow filter from here */
+        /* Grounded state */
+        margin-top: 0px;
+      }
+
+      .flight-plane.is-flying {
         animation: flightBob 2.5s ease-in-out infinite;
       }
 
-      /* THE NEW SHADOW EMOJI */
       .flight-plane::before {
         content: "✈️";
         position: absolute;
         top: 0;
         left: 0;
-        z-index: -2; /* Tucks it behind the main plane and contrail */
+        z-index: -2;
+        /* Grounded shadow: tight and dark */
+        transform: translate(-2px, 4px) scale(1);
+        filter: grayscale(100%) brightness(0) opacity(0.4) blur(1px);
+      }
+
+      .flight-plane.is-flying::before {
         animation: shadowBob 2.5s ease-in-out infinite;
       }
 
@@ -473,6 +482,11 @@
         border-radius: 10px;
         filter: blur(3px);
         z-index: -1;
+        /* Grounded state: hide the contrail/exhaust */
+        opacity: 0;
+      }
+
+      .flight-plane.is-flying::after {
         animation: contrailPulse 0.6s infinite alternate;
       }
 
@@ -1089,6 +1103,7 @@
           flightStatus.innerText = "Scheduled: Departs Tuesday at 06:20 GMT";
           flightPlane.style.left = "0%";
           flightFill.style.width = "0%";
+          flightPlane.classList.remove("is-flying"); // Grounded
         } else if (now >= FLIGHT_DEPARTURE && now <= FLIGHT_ARRIVAL) {
           const flightTotal = FLIGHT_ARRIVAL - FLIGHT_DEPARTURE;
           const flightElapsed = now - FLIGHT_DEPARTURE;
@@ -1100,10 +1115,12 @@
           flightStatus.innerText = `🛫 In the air! ${flightPct.toFixed(1)}% of the way to London!`;
           flightPlane.style.left = flightPct + "%";
           flightFill.style.width = flightPct + "%";
+          flightPlane.classList.add("is-flying"); // Flying!
         } else {
           flightStatus.innerText = "🛬 Landed! She's home!";
           flightPlane.style.left = "100%";
           flightFill.style.width = "100%";
+          flightPlane.classList.remove("is-flying"); // Grounded
         }
       }
 
