@@ -272,9 +272,7 @@
         border: 1px solid #ef9a9a;
       }
 
-      /* --- NEW FLIGHT TRACKER STYLES --- */
       .flight-card {
-        /* Replace your existing background with this */
         background: linear-gradient(
           -45deg,
           rgba(255, 255, 255, 0.7),
@@ -284,17 +282,14 @@
         );
         background-size: 300% 300%;
         animation: cardSkyPan 15s ease infinite;
-
-        /* Keep your existing border, padding, radius, etc. */
         border: 1px solid rgba(255, 255, 255, 0.8);
         border-radius: 16px;
         padding: 20px 25px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         position: relative;
-        overflow: hidden; /* Keeps the background contained */
+        overflow: hidden;
       }
 
-      /* Add this with your other animations */
       @keyframes cardSkyPan {
         0% {
           background-position: 0% 50%;
@@ -513,6 +508,91 @@
           /* Shadow pushes further down and gets softer/smaller when plane floats up */
           transform: translate(-8px, 14px) scale(0.85);
           filter: grayscale(100%) brightness(0) opacity(0.15) blur(4px);
+        }
+      }
+
+      /* --- AIRPLANE LIGHTS --- */
+      .flight-light {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        z-index: 15;
+        display: none; /* Lights are completely off when grounded */
+      }
+
+      /* Turn lights on only when the .is-flying class is active */
+      .is-flying .flight-light {
+        display: block;
+      }
+
+      /* Left Wing (Port) - Red */
+      .light-red {
+        background: #ff3b30;
+        box-shadow:
+          0 0 6px #ff3b30,
+          0 0 10px #ff3b30;
+        top: 8px;
+        left: 7px;
+        animation: navPulse 2s infinite ease-in-out;
+        width: 2px;
+        height: 2px;
+      }
+
+      /* Right Wing (Starboard) - Green */
+      .light-green {
+        background: #34c759;
+        box-shadow:
+          0 0 6px #34c759,
+          0 0 10px #34c759;
+        bottom: 5px;
+        right: 6px;
+        /* A 1-second delay so it pulses out of sync with the red light */
+        animation: navPulse 2s infinite ease-in-out 1s;
+        width: 2px;
+        height: 2px;
+      }
+
+      /* Body/Tail - White Strobe (Double Flash) */
+      .light-strobe {
+        background: #ffffff;
+        box-shadow:
+          0 0 8px #ffffff,
+          0 0 15px #ffffff;
+        top: 55%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation: strobeFlash 1.5s infinite;
+      }
+
+      /* Smooth breathing glow for the wing lights */
+      @keyframes navPulse {
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* Sharp, realistic double-flash for the strobe */
+      @keyframes strobeFlash {
+        0%,
+        5% {
+          opacity: 1;
+        }
+        6%,
+        15% {
+          opacity: 0;
+        }
+        16%,
+        21% {
+          opacity: 1;
+        }
+        22%,
+        100% {
+          opacity: 0;
         }
       }
 
@@ -768,7 +848,12 @@
             <span>LHR</span>
           </div>
           <div id="flight-progress-fill"></div>
-          <div id="flight-plane" class="flight-plane">✈️</div>
+          <div id="flight-plane" class="flight-plane">
+            ✈️
+            <span class="flight-light light-red"></span>
+            <span class="flight-light light-green"></span>
+            <span class="flight-light light-strobe"></span>
+          </div>
         </div>
         <div class="flight-status-text" id="flight-status">
           Loading flight data...
@@ -813,7 +898,7 @@
         new Date(2026, 1, 18, 20, 0),
         new Date(2026, 1, 22, 16, 30),
       ];
-      const FLIGHT_DEPARTURE = new Date("2026-02-24T06:20:00Z"); // 06:20 GMT
+      const FLIGHT_DEPARTURE = new Date("2026-02-20T06:20:00Z"); // 06:20 GMT
       const FLIGHT_ARRIVAL = new Date("2026-02-24T19:35:00Z"); // 19:35 GMT
 
       let confettiLaunched = false;
