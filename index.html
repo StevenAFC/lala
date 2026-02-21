@@ -1815,7 +1815,7 @@
             } else if (isFlightDay) {
               el.style.background = "linear-gradient(135deg, #f6ad55, #ed8936)";
               el.style.color = "white";
-              el.innerHTML += `<span class="status-icon" style="animation: flightBob 2s infinite">✈️</span>`;
+              el.innerHTML += `<span class="status-icon" style="transform: rotate(45deg); animation: flightBob 2s infinite">✈️</span>`;
             } else if (cur.getDay() === 0 || cur.getDay() === 6) {
               el.classList.add("weekend");
             }
@@ -1899,6 +1899,7 @@
     </script>
   </body>
 </html>
+
 
 
 
