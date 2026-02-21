@@ -1427,15 +1427,15 @@
 
         // Calculate Thursdays and Saturdays remaining
         let thurs = 0,
-          sats = 0;
+          weekends = 0;
         let dayScanner = new Date(now);
         while (dayScanner < TARGET_DATE_EXACT) {
           if (dayScanner.getDay() === 4) thurs++; // 4 = Thursday
-          if (dayScanner.getDay() === 6) sats++; // 6 = Saturday
+          if (dayScanner.getDay() === 6) weekends++; // 6 = Saturday
           dayScanner.setDate(dayScanner.getDate() + 1);
         }
-        const thursWord = thurs === 1 ? "Thurs" : "Thursdays";
-        const satsWord = sats === 1 ? "Sat" : "Saturdays";
+        const thursWord = thurs === 1 ? "Thursday" : "Thursdays";
+        const weekendsWord = sats === 1 ? "Weekend" : "Weekends";
 
         // Milestone text
         const milestones = [
@@ -1486,7 +1486,7 @@
 
         // 2. Weekends Logic
         const weekendCard = document.getElementById("stat-weekends");
-        if (thurs <= 0 && sats <= 0) {
+        if (thurs <= 0 && weekends <= 0) {
           weekendCard.classList.add("completed");
           smartUpdateDOM(
             "stat-weekends",
@@ -1496,7 +1496,7 @@
           weekendCard.classList.remove("completed");
           smartUpdateDOM(
             "stat-weekends",
-            `<span>📅</span> <span>${thurs} ${thursWord} & ${sats} ${satsWord} left!</span>`,
+            `<span>📅</span> <span>${thurs} ${thursWord} & ${weekends} ${weekendsWord} left!</span>`,
           );
         }
 
@@ -1899,3 +1899,4 @@
     </script>
   </body>
 </html>
+
