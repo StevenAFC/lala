@@ -327,11 +327,44 @@
         animation: softWiggle 3s infinite ease-in-out;
         z-index: 1;
       }
-      .check-mark {
-        font-size: 1.4rem;
-        font-weight: 900;
-        line-height: 1;
-        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      /* --- Upgraded Check Mark --- */
+      .check-mark-svg {
+        width: 26px;
+        height: 26px;
+        color: #ffffff;
+        transform-origin: center;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+      }
+
+      .check-mark-svg polyline {
+        /* Setup for the drawing animation */
+        stroke-dasharray: 50;
+        stroke-dashoffset: 50;
+        /* The animation fills in the stroke */
+        animation: drawCheck 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)
+          forwards;
+      }
+
+      @keyframes drawCheck {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+
+      @keyframes idlePop {
+        0%,
+        85%,
+        100% {
+          transform: scale(1) rotate(0deg);
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+        }
+        90% {
+          transform: scale(1.25) rotate(5deg);
+          filter: drop-shadow(0 4px 8px rgba(255, 255, 255, 0.6));
+        }
+        95% {
+          transform: scale(0.95) rotate(-2deg);
+        }
       }
 
       /* --- Split Timer --- */
@@ -1309,7 +1342,7 @@
 
         const currentHour = now.getHours();
         if (currentHour >= 20 || currentHour < 6) {
-          document.body.classList.add("night-mode");
+          // document.body.classList.add("night-mode");
         } else {
           document.body.classList.remove("night-mode");
         }
@@ -1682,7 +1715,20 @@
 
           if (isPast) {
             el.classList.add("past");
-            el.innerHTML = `<span class="check-mark">✔</span>`;
+
+            // Calculate a slight delay so the ticks animate in sequence
+            let daysFromStart = Math.round(
+              (cur - START_DATE) / (1000 * 60 * 60 * 24),
+            );
+            let staggerDelay = daysFromStart * 0.04;
+
+            let idleDelay = staggerDelay + 2;
+
+            el.innerHTML = `
+              <svg class="check-mark-svg" style="animation: idlePop 6s ease-in-out infinite ${idleDelay}s" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" style="animation-delay: ${staggerDelay}s"></polyline>
+              </svg>
+            `;
           } else if (isToday) {
             el.classList.add("today");
             el.innerHTML = isArsenal
