@@ -264,14 +264,15 @@
         height: 45px;
         border-radius: 10px;
         display: flex;
-        flex-direction: column;
+        flex-direction: column; /* Stacks number on top of emoji */
         align-items: center;
-        justify-content: center;
+        justify-content: center; /* Centers the group */
         position: relative;
         cursor: default;
         border: 1px solid rgba(0, 0, 0, 0.05);
         transition: transform 0.2s;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+        line-height: 1; /* Prevents emoji height from pushing text */
       }
       .cal-cell.weekend {
         background: var(--weekend-color);
@@ -849,12 +850,13 @@
       @keyframes flightBob {
         0%,
         100% {
-          margin-top: 0px;
+          transform: translateY(0) rotate(45deg);
         }
         50% {
-          margin-top: -8px;
+          transform: translateY(-5px) rotate(45deg);
         }
       }
+
       @keyframes shadowBob {
         0%,
         100% {
@@ -874,6 +876,27 @@
         100% {
           opacity: 0.9;
           transform: rotate(-45deg) scaleX(1.5) translateX(-4px);
+        }
+      }
+      @keyframes rotateOnly {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes bounceOnly {
+        0%,
+        100% {
+          transform: translateY(0) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-10px) rotate(180deg);
+        }
+        100% {
+          transform: translateY(0) rotate(360deg);
         }
       }
       .flight-light {
@@ -1430,8 +1453,8 @@
           weekends = 0;
         let dayScanner = new Date(now);
         while (dayScanner < TARGET_DATE_EXACT) {
-          if (dayScanner.getDay() === 4) thurs++; // 4 = Thursday
-          if (dayScanner.getDay() === 6) weekends++; // 6 = Saturday
+          if (dayScanner.getDay() === 4) thurs++;
+          if (dayScanner.getDay() === 6) weekends++;
           dayScanner.setDate(dayScanner.getDate() + 1);
         }
         const thursWord = thurs === 1 ? "Thursday" : "Thursdays";
@@ -1804,6 +1827,7 @@
             `;
           } else if (isToday) {
             el.classList.add("today");
+            // The flex-direction: column handles the vertical stacking
             el.innerHTML = isArsenal
               ? `<span class="date-num">${cur.getDate()}</span><span class="status-icon">⚽</span>`
               : `<span class="date-num">${cur.getDate()}</span><span class="status-icon-rocket">🚀</span>`;
@@ -1811,11 +1835,13 @@
             el.innerHTML = `<span class="date-num">${cur.getDate()}</span>`;
             if (isArsenal) {
               el.classList.add("arsenal");
-              el.innerHTML += `<span class="status-icon">⚽</span>`;
+              // REMOVED position: absolute so it stacks under the number
+              el.innerHTML += `<span class="status-icon" style="animation: rotateOnly 1s linear infinite, bounceOnly 2s ease-in-out infinite;">⚽</span>`;
             } else if (isFlightDay) {
               el.style.background = "linear-gradient(135deg, #f6ad55, #ed8936)";
               el.style.color = "white";
-              el.innerHTML += `<span class="status-icon" style="transform: rotate(45deg); animation: flightBob 2s infinite">✈️</span>`;
+              // REMOVED position: absolute
+              el.innerHTML += `<span class="status-icon" style="animation: flightBob 2s infinite">✈️</span>`;
             } else if (cur.getDay() === 0 || cur.getDay() === 6) {
               el.classList.add("weekend");
             }
@@ -1899,7 +1925,3 @@
     </script>
   </body>
 </html>
-
-
-
-
