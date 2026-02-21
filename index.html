@@ -20,8 +20,6 @@
         --text-color: #2d3748;
         --weekend-color: #cbd5e0;
         --best-day-gold: #f6ad55;
-        --pop-green-start: #00ff87;
-        --pop-green-end: #60efff;
         --bar-day-color: linear-gradient(90deg, #2c3e50 0%, #4ca1af 100%);
         --bar-time-color: linear-gradient(90deg, #ff8008 0%, #ffc837 100%);
       }
@@ -50,7 +48,7 @@
         --glass-bg: rgba(20, 25, 40, 0.85);
         --text-color: #e2e8f0;
         --glass-border: rgba(255, 255, 255, 0.1);
-        filter: brightness(0.85); /* Subtly dims the vibrant background */
+        filter: brightness(0.85);
       }
       body.night-mode .dashboard,
       body.night-mode .flight-card {
@@ -61,21 +59,13 @@
       body.night-mode .flight-title,
       body.night-mode #day-percent,
       body.night-mode #time-percent {
-        color: #e2e8f0; /* Makes text light gray instead of dark slate */
+        color: #e2e8f0;
       }
-
-      /* =========================================
-         🌙 NIGHT MODE OVERRIDES FOR ALL ELEMENTS
-         ========================================= */
-
-      /* 1. Dual Clocks */
       body.night-mode .dual-clocks {
         background: rgba(0, 0, 0, 0.3);
         color: #e2e8f0;
         border: 1px solid rgba(255, 255, 255, 0.1);
       }
-
-      /* 2. Calendar Grid */
       body.night-mode .cal-cell {
         background: rgba(255, 255, 255, 0.05);
         color: #e2e8f0;
@@ -92,8 +82,6 @@
       body.night-mode .cal-header {
         color: #a0aec0;
       }
-
-      /* 3. Stats Grid (Swap Pastels for Rich Dark Tones) */
       body.night-mode .stat-blue {
         background: linear-gradient(
           135deg,
@@ -126,8 +114,6 @@
         );
         color: #ef9a9a;
       }
-
-      /* 4. Flight Tracker */
       body.night-mode .flight-card {
         background: linear-gradient(
           -45deg,
@@ -143,10 +129,8 @@
       }
       body.night-mode .flight-track::before,
       body.night-mode .flight-track::after {
-        background: #1a202c; /* Darkens the white origin/destination dots */
+        background: #1a202c;
       }
-
-      /* 5. Summary Footer */
       body.night-mode .summary-section {
         background: rgba(0, 0, 0, 0.2);
         border-top-color: rgba(255, 255, 255, 0.1);
@@ -159,7 +143,7 @@
         color: #a0aec0;
       }
       body.night-mode .summary-item:not(:last-child)::after {
-        background: rgba(255, 255, 255, 0.1); /* Softens the divider lines */
+        background: rgba(255, 255, 255, 0.1);
       }
 
       @keyframes gradientBG {
@@ -175,7 +159,7 @@
       }
 
       body.hyper-drive {
-        animation: gradientBG 5s ease infinite; /* 4x faster background! */
+        animation: gradientBG 5s ease infinite;
       }
       body.hyper-drive .pill-total {
         background: linear-gradient(135deg, #f6ad55, #ed8936);
@@ -221,8 +205,7 @@
         display: flex;
         align-items: baseline;
         gap: 6px;
-        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-        /* A very soft, elegant frosted glass background */
+        font-family: ui-monospace, Consolas, monospace;
         background: rgba(255, 255, 255, 0.4);
         padding: 4px 10px;
         border-radius: 12px;
@@ -231,32 +214,16 @@
           0 2px 5px rgba(0, 0, 0, 0.03);
         border: 1px solid rgba(255, 255, 255, 0.5);
       }
-
       .pct-main {
         font-weight: 800;
         font-size: 0.85rem;
         color: #2d3748;
       }
-
       .pct-sub {
         font-weight: 600;
         font-size: 0.7rem;
         color: #718096;
         opacity: 0.85;
-      }
-
-      /* Keep it looking great when Night Mode triggers */
-      body.night-mode #day-percent,
-      body.night-mode #time-percent {
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05);
-      }
-      body.night-mode .pct-main {
-        color: #f7fafc;
-      }
-      body.night-mode .pct-sub {
-        color: #a0aec0;
       }
       .progress-container {
         height: 16px;
@@ -279,7 +246,7 @@
         background: var(--bar-time-color);
       }
 
-      /* --- Calendar --- */
+      /* --- Calendar Base --- */
       .calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
@@ -312,58 +279,175 @@
         opacity: 0.8;
       }
       .cal-cell.empty {
-        background: transparent;
-        border: none;
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px dashed rgba(255, 255, 255, 0.5);
         box-shadow: none;
       }
+      body.night-mode .cal-cell.empty {
+        background: rgba(0, 0, 0, 0.1);
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+
+      /* --- Cooling Plasma Trail --- */
       .cal-cell.past {
-        background: linear-gradient(
-          135deg,
-          var(--pop-green-start),
-          var(--pop-green-end)
-        );
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.8);
-        animation: softWiggle 3s infinite ease-in-out;
+        position: relative;
         z-index: 1;
-      }
-      /* --- Upgraded Check Mark --- */
-      .check-mark-svg {
-        width: 26px;
-        height: 26px;
-        color: #ffffff;
         transform-origin: center;
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+        /* Box shadow, borders, and backgrounds are driven dynamically by JS! */
       }
 
-      .check-mark-svg polyline {
-        /* Setup for the drawing animation */
-        stroke-dasharray: 50;
-        stroke-dashoffset: 50;
-        /* The animation fills in the stroke */
-        animation: drawCheck 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)
-          forwards;
+      .plasma-check {
+        width: 22px;
+        height: 22px;
+        color: #ffffff;
+        filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
+        z-index: 2;
       }
 
-      @keyframes drawCheck {
-        to {
-          stroke-dashoffset: 0;
+      /* Plasma physical throb animation */
+      @keyframes plasmaPulse {
+        0% {
+          transform: scale(0.96);
+          filter: brightness(0.85);
         }
-      }
-
-      @keyframes idlePop {
-        0%,
-        85%,
         100% {
-          transform: scale(1) rotate(0deg);
-          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+          transform: scale(1.04);
+          filter: brightness(1.25);
         }
-        90% {
-          transform: scale(1.25) rotate(5deg);
-          filter: drop-shadow(0 4px 8px rgba(255, 255, 255, 0.6));
+      }
+
+      /* --- Special Cells --- */
+      @keyframes todayPulse {
+        0% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(246, 173, 85, 0.7);
         }
-        95% {
-          transform: scale(0.95) rotate(-2deg);
+        70% {
+          transform: scale(1.05);
+          box-shadow: 0 0 0 10px rgba(246, 173, 85, 0);
+        }
+        100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(246, 173, 85, 0);
+        }
+      }
+      .cal-cell.today {
+        background: white;
+        border: 3px solid var(--best-day-gold);
+        z-index: 2;
+        animation: todayPulse 2s infinite;
+      }
+      .cal-cell.arsenal {
+        background: #fc8181;
+        color: white;
+      }
+      .date-num {
+        font-size: 0.8rem;
+        font-weight: bold;
+      }
+      .status-icon {
+        font-size: 1.1rem;
+        margin-top: 1px;
+      }
+      .status-icon-rocket {
+        display: inline-block;
+        position: relative;
+        font-size: 1.1rem;
+        /* Rotates the emoji 45deg to point straight Right */
+        transform: rotate(45deg);
+        animation: rocketBob 2s ease-in-out infinite;
+        cursor: pointer;
+      }
+
+      /* --- THE SHADOW: RESTORED --- */
+      .status-icon-rocket::before {
+        content: "🚀";
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        /* Base position under the rocket */
+        transform: translate(-1px, 5px) scale(0.9);
+        /* Make the emoji see-through */
+        color: transparent;
+        /* Cast a solid shadow, tinting it deep orange to reflect the thruster light */
+        text-shadow: 0 0 0 rgba(200, 80, 0, 0.8);
+        opacity: 0.5; /* Overall visibility */
+        filter: blur(2px); /* Softens the edges */
+        animation: rocketShadowBob 2s ease-in-out infinite;
+      }
+
+      /* --- THE THRUSTER: REALIGNED --- */
+      .status-icon-rocket::after {
+        content: "";
+        position: absolute;
+        /* Adjusted anchor point for the horizontal tail */
+        top: 55%;
+        left: -2px;
+        width: 6px;
+        height: 14px;
+        background: linear-gradient(
+          to bottom,
+          #fff,
+          #ffc837,
+          #ff8008,
+          transparent
+        );
+        clip-path: polygon(50% 100%, 0 0, 100% 0);
+        filter: blur(0.5px);
+        /* Rotates flame to point straight Left (opposite of travel) */
+        transform-origin: top center;
+        transform: translateY(-50%) rotate(90deg);
+        z-index: -1;
+        animation: flameFlicker 0.1s infinite alternate;
+        opacity: 0.9;
+      }
+
+      /* Updated Hover State */
+      .cal-cell.today:hover .status-icon-rocket::after {
+        height: 22px;
+        filter: blur(1px) brightness(1.8);
+      }
+
+      /* Animations calibrated for horizontal movement */
+      @keyframes rocketBob {
+        0%,
+        100% {
+          transform: rotate(45deg) translate(0, 0);
+        }
+        50% {
+          transform: rotate(45deg) translate(3px, -2px);
+        }
+      }
+
+      @keyframes flameFlicker {
+        0% {
+          transform: translate(-10%, 80%) rotate(225deg) scaleY(0.8);
+        }
+        100% {
+          transform: translate(-10%, 80%) rotate(225deg) scaleY(1.2);
+        }
+      }
+
+      @keyframes rocketShadowBob {
+        0%,
+        100% {
+          transform: translate(-1px, 5px) scale(0.9);
+          opacity: 0.5; /* Dark and close */
+          filter: blur(2px);
+        }
+        50% {
+          /* Moves away, gets smaller, lighter, and blurrier */
+          transform: translate(-4px, 10px) scale(0.8);
+          opacity: 0.2;
+          filter: blur(4px);
+        }
+      }
+
+      /* Subtle vibration for hover */
+      @keyframes rocketLaunch {
+        to {
+          filter: drop-shadow(-5px 5px 10px #ffc837);
         }
       }
 
@@ -413,23 +497,20 @@
       /* --- Stats Grid --- */
       .stats-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Forces exactly two columns */
-        gap: 16px; /* Wider, cleaner spacing between cards */
-        margin: 5px 0; /* Gives a little breathing room from the timer */
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin: 5px 0;
       }
-
       .stat-card {
-        padding: 18px 16px; /* Taller, more generous internal spacing */
-        border-radius: 16px; /* Slightly softer corners */
+        padding: 18px 16px;
+        border-radius: 16px;
         text-align: center;
         font-weight: 700;
         font-size: 0.95rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 12px; /* Better spacing between the emoji and the text */
-
-        /* Soft, premium glass feel */
+        gap: 12px;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border: 2px solid rgba(255, 255, 255, 0.6);
@@ -438,7 +519,30 @@
           transform 0.2s ease,
           box-shadow 0.2s ease;
       }
-
+      .stat-card:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+      }
+      .stat-card span:first-child {
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+      .stat-blue {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        color: #0d47a1;
+      }
+      .stat-green {
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        color: #1b5e20;
+      }
+      .stat-gold {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        color: #d84315;
+      }
+      .stat-red {
+        background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+        color: #b71c1c;
+      }
       @keyframes pulseLive {
         0% {
           box-shadow: 0 0 0 0 rgba(229, 58, 64, 0.7);
@@ -457,35 +561,7 @@
         animation: pulseLive 1.5s infinite;
       }
 
-      .stat-card:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
-      }
-
-      /* Make the emoji sizing consistent and clean */
-      .stat-card span:first-child {
-        font-size: 1.5rem;
-        line-height: 1;
-      }
-
-      /* Restored Pastel Gradients */
-      .stat-blue {
-        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-        color: #0d47a1;
-      }
-      .stat-green {
-        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-        color: #1b5e20;
-      }
-      .stat-gold {
-        background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
-        color: #d84315; /* Darkened slightly for perfect readability */
-      }
-      .stat-red {
-        background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-        color: #b71c1c;
-      }
-
+      /* --- Flight Tracker --- */
       .flight-card {
         background: linear-gradient(
           -45deg,
@@ -503,7 +579,6 @@
         position: relative;
         overflow: hidden;
       }
-
       @keyframes cardSkyPan {
         0% {
           background-position: 0% 50%;
@@ -515,14 +590,12 @@
           background-position: 0% 50%;
         }
       }
-
       .flight-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 30px; /* Space for the track labels */
+        margin-bottom: 30px;
       }
-
       .flight-title {
         font-weight: 800;
         font-size: 1.1rem;
@@ -531,7 +604,6 @@
         align-items: center;
         gap: 8px;
       }
-
       .flight-link {
         background: linear-gradient(90deg, #ff8008 0%, #ffc837 100%);
         color: white;
@@ -545,12 +617,10 @@
         box-shadow: 0 4px 10px rgba(255, 128, 8, 0.3);
         transition: all 0.2s ease;
       }
-
       .flight-link:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 15px rgba(255, 128, 8, 0.5);
       }
-
       .flight-track {
         position: relative;
         height: 8px;
@@ -559,8 +629,6 @@
         margin: 0 10px 20px 10px;
         box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
       }
-
-      /* Origin and Destination Dots */
       .flight-track::before,
       .flight-track::after {
         content: "";
@@ -573,21 +641,16 @@
         background: white;
         z-index: 5;
       }
-
       .flight-track::before {
         left: -7px;
         border: 3px solid var(--best-day-gold);
       }
-
       .flight-track::after {
         right: -7px;
         border: 3px solid #ff8008;
-        /* Add the animation line here */
-        animation: radarPulse 2s infinite;
+        animation: destPulse 2s infinite;
       }
-
-      /* Add this new animation block right below it */
-      @keyframes radarPulse {
+      @keyframes destPulse {
         0% {
           box-shadow: 0 0 0 0 rgba(255, 128, 8, 0.8);
         }
@@ -598,8 +661,6 @@
           box-shadow: 0 0 0 0 rgba(255, 128, 8, 0);
         }
       }
-
-      /* Origin and Destination Labels */
       .track-labels {
         position: absolute;
         top: -26px;
@@ -613,13 +674,10 @@
         color: #2c3e50;
         text-shadow: 0 2px 5px rgba(255, 255, 255, 0.8);
       }
-
-      /* Make LHR pop a bit more since it's the destination */
       .track-labels span:last-child {
         color: #ff8008;
         text-shadow: 0 0 10px rgba(255, 128, 8, 0.3);
       }
-
       #flight-progress-fill {
         position: relative;
         top: 0;
@@ -632,12 +690,11 @@
         box-shadow: 0 0 10px rgba(255, 128, 8, 0.4);
         z-index: 1;
       }
-
       #flight-progress-fill::after {
         content: "";
         position: absolute;
-        right: -4px; /* Hangs slightly off the end of the fill */
-        top: -2px; /* Centers it over the 8px tall track */
+        right: -4px;
+        top: -2px;
         height: 12px;
         width: 12px;
         background: #ffffff;
@@ -647,7 +704,6 @@
           0 0 20px var(--best-day-gold);
         z-index: 2;
       }
-
       .flight-plane {
         position: absolute;
         top: -16px;
@@ -656,30 +712,23 @@
         transition: left 1s linear;
         transform: translateX(-25%) rotate(45deg);
         z-index: 10;
-        /* Grounded state */
         margin-top: 0px;
       }
-
       .flight-plane.is-flying {
         animation: flightBob 2.5s ease-in-out infinite;
       }
-
       .flight-plane::before {
         content: "✈️";
         position: absolute;
         top: 0;
         left: 0;
         z-index: -2;
-        /* Grounded shadow: tight and dark */
         transform: translate(-2px, 4px) scale(1);
         filter: grayscale(100%) brightness(0) opacity(0.4) blur(1px);
       }
-
       .flight-plane.is-flying::before {
         animation: shadowBob 2.5s ease-in-out infinite;
       }
-
-      /* Contrail code stays the same, just keeping it here for reference */
       .flight-plane::after {
         content: "";
         position: absolute;
@@ -691,15 +740,11 @@
         border-radius: 10px;
         filter: blur(3px);
         z-index: -1;
-        /* Grounded state: hide the contrail/exhaust */
         opacity: 0;
       }
-
       .flight-plane.is-flying::after {
         animation: contrailPulse 0.6s infinite alternate;
       }
-
-      /* Plane Bobs Up */
       @keyframes flightBob {
         0%,
         100% {
@@ -707,40 +752,40 @@
         }
         50% {
           margin-top: -8px;
-        } /* Floats higher */
+        }
       }
-
-      /* Shadow reacts to the bob */
       @keyframes shadowBob {
         0%,
         100% {
-          /* Tighter, darker shadow when plane is low */
           transform: translate(-2px, 4px) scale(1);
           filter: grayscale(100%) brightness(0) opacity(0.4) blur(1px);
         }
         50% {
-          /* Shadow pushes further down and gets softer/smaller when plane floats up */
           transform: translate(-8px, 14px) scale(0.85);
           filter: grayscale(100%) brightness(0) opacity(0.15) blur(4px);
         }
       }
-
-      /* --- AIRPLANE LIGHTS --- */
+      @keyframes contrailPulse {
+        0% {
+          opacity: 0.4;
+          transform: rotate(-45deg) scaleX(0.8) translateX(0);
+        }
+        100% {
+          opacity: 0.9;
+          transform: rotate(-45deg) scaleX(1.5) translateX(-4px);
+        }
+      }
       .flight-light {
         position: absolute;
         width: 4px;
         height: 4px;
         border-radius: 50%;
         z-index: 15;
-        display: none; /* Lights are completely off when grounded */
+        display: none;
       }
-
-      /* Turn lights on only when the .is-flying class is active */
       .is-flying .flight-light {
         display: block;
       }
-
-      /* Left Wing (Port) - Red */
       .light-red {
         background: #ff3b30;
         box-shadow:
@@ -752,8 +797,6 @@
         width: 2px;
         height: 2px;
       }
-
-      /* Right Wing (Starboard) - Green */
       .light-green {
         background: #34c759;
         box-shadow:
@@ -761,13 +804,10 @@
           0 0 10px #34c759;
         bottom: 5px;
         right: 6px;
-        /* A 1-second delay so it pulses out of sync with the red light */
         animation: navPulse 2s infinite ease-in-out 1s;
         width: 2px;
         height: 2px;
       }
-
-      /* Body/Tail - White Strobe (Double Flash) */
       .light-strobe {
         background: #ffffff;
         box-shadow:
@@ -778,8 +818,6 @@
         transform: translate(-50%, -50%);
         animation: strobeFlash 1.5s infinite;
       }
-
-      /* Smooth breathing glow for the wing lights */
       @keyframes navPulse {
         0%,
         100% {
@@ -789,8 +827,6 @@
           opacity: 1;
         }
       }
-
-      /* Sharp, realistic double-flash for the strobe */
       @keyframes strobeFlash {
         0%,
         5% {
@@ -809,21 +845,6 @@
           opacity: 0;
         }
       }
-
-      /* The Exhaust Pulsing Animation */
-      @keyframes contrailPulse {
-        0% {
-          opacity: 0.4;
-          /* Added rotate(-45deg) before the scale and translate */
-          transform: rotate(-45deg) scaleX(0.8) translateX(0);
-        }
-        100% {
-          opacity: 0.9;
-          /* Added rotate(-45deg) here too so it stays angled while stretching */
-          transform: rotate(-45deg) scaleX(1.5) translateX(-4px);
-        }
-      }
-
       .flight-status-text {
         text-align: center;
         font-size: 0.9rem;
@@ -881,61 +902,6 @@
         font-size: 0.75rem;
         color: #718096;
         font-weight: 400;
-      }
-
-      /* --- Animations --- */
-      @keyframes softWiggle {
-        0%,
-        100% {
-          transform: rotate(0deg);
-        }
-        2% {
-          transform: rotate(-3deg);
-        }
-        4% {
-          transform: rotate(3deg);
-        }
-        6% {
-          transform: rotate(-3deg);
-        }
-        8% {
-          transform: rotate(3deg);
-        }
-        10% {
-          transform: rotate(0deg);
-        }
-      }
-      @keyframes todayPulse {
-        0% {
-          transform: scale(1);
-          box-shadow: 0 0 0 0 rgba(246, 173, 85, 0.7);
-        }
-        70% {
-          transform: scale(1.05);
-          box-shadow: 0 0 0 10px rgba(246, 173, 85, 0);
-        }
-        100% {
-          transform: scale(1);
-          box-shadow: 0 0 0 0 rgba(246, 173, 85, 0);
-        }
-      }
-      .cal-cell.today {
-        background: white;
-        border: 3px solid var(--best-day-gold);
-        z-index: 2;
-        animation: todayPulse 2s infinite;
-      }
-      .cal-cell.arsenal {
-        background: #fc8181;
-        color: white;
-      }
-      .date-num {
-        font-size: 0.8rem;
-        font-weight: bold;
-      }
-      .status-icon {
-        font-size: 1.1rem;
-        margin-top: 1px;
       }
 
       /* --- Digit Animation Helpers --- */
@@ -998,9 +964,6 @@
         .timer-value {
           font-size: 1.8rem;
         }
-        .cal-cell {
-          height: 45px;
-        }
         .summary-section {
           grid-template-columns: 1fr 1fr;
           gap: 20px 10px;
@@ -1043,33 +1006,30 @@
           transform: translateY(0);
         }
       }
-
       .dashboard > * {
         animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
       }
-
-      /* Delay each section slightly so they cascade in */
       .dashboard > *:nth-child(1) {
         animation-delay: 0.1s;
-      } /* Bars */
+      }
       .dashboard > *:nth-child(2) {
         animation-delay: 0.2s;
-      } /* Calendar */
+      }
       .dashboard > *:nth-child(3) {
         animation-delay: 0.3s;
-      } /* Split Timer */
+      }
       .dashboard > *:nth-child(4) {
         animation-delay: 0.4s;
-      } /* Stats Grid */
+      }
       .dashboard > *:nth-child(5) {
         animation-delay: 0.5s;
-      } /* Clocks */
+      }
       .dashboard > *:nth-child(6) {
         animation-delay: 0.6s;
-      } /* Flight */
+      }
       .dashboard > *:nth-child(7) {
         animation-delay: 0.7s;
-      } /* Footer */
+      }
     </style>
   </head>
   <body>
@@ -1077,18 +1037,15 @@
       <div>
         <div class="bar-group">
           <div class="bar-label">
-            <span>Day Progress</span>
-            <span id="day-percent">0%</span>
+            <span>Day Progress</span><span id="day-percent">0%</span>
           </div>
           <div class="progress-container">
             <div id="day-bar" class="progress-fill"></div>
           </div>
         </div>
-
         <div class="bar-group">
           <div class="bar-label">
-            <span>Time Progress</span>
-            <span id="time-percent">0%</span>
+            <span>Time Progress</span><span id="time-percent">0%</span>
           </div>
           <div class="progress-container">
             <div id="time-bar" class="progress-fill"></div>
@@ -1097,7 +1054,6 @@
       </div>
 
       <div class="calendar-grid" id="calendar"></div>
-
       <div class="timer-container" id="main-timer"></div>
 
       <div class="stats-grid">
@@ -1123,12 +1079,8 @@
             >Live Map 📍</a
           >
         </div>
-
         <div class="flight-track">
-          <div class="track-labels">
-            <span>BKK</span>
-            <span>LHR</span>
-          </div>
+          <div class="track-labels"><span>BKK</span><span>LHR</span></div>
           <div id="flight-progress-fill"></div>
           <div id="flight-plane" class="flight-plane">
             ✈️
@@ -1169,6 +1121,7 @@
         </div>
       </div>
     </div>
+
     <script>
       const START_DATE = new Date("2026-01-29T00:00:00");
       const TARGET_DATE_MATH = new Date("2026-02-26T00:00:00");
@@ -1180,14 +1133,13 @@
         new Date(2026, 1, 18, 20, 0),
         new Date(2026, 1, 22, 16, 30),
       ];
-      const FLIGHT_DEPARTURE = new Date("2026-02-24T06:20:00Z"); // 06:20 GMT
-      const FLIGHT_ARRIVAL = new Date("2026-02-24T19:35:00Z"); // 19:35 GMT
+      const FLIGHT_DEPARTURE = new Date("2026-02-24T06:20:00Z");
+      const FLIGHT_ARRIVAL = new Date("2026-02-24T19:35:00Z");
 
       let confettiLaunched = false;
       let landingConfettiLaunched = false;
       let today = new Date().toDateString();
 
-      // --- Variables for animated timer ---
       let timersInitialized = false;
       const previousTimes = {
         work: { h: [" ", " ", " ", " "], m: ["0", "0"], s: ["0", "0"] },
@@ -1199,22 +1151,17 @@
         return n < 10 ? "0" + n : "" + n;
       }
 
-      // BATTERY SAVER: Only updates the DOM if the content has actually changed
       function smartUpdateDOM(id, newHTML) {
         const el = document.getElementById(id);
-        if (el && el.innerHTML !== newHTML) {
-          el.innerHTML = newHTML;
-        }
+        if (el && el.innerHTML !== newHTML) el.innerHTML = newHTML;
       }
 
       function initTimers() {
         if (timersInitialized) return;
         const timerContainer = document.getElementById("main-timer");
-
         ["work", "awake", "total"].forEach((type) => {
           const pill = document.createElement("div");
           pill.className = `timer-pill pill-${type}`;
-
           const label = document.createElement("div");
           label.className = "timer-label";
           label.textContent =
@@ -1223,32 +1170,23 @@
               : type === "awake"
                 ? "Awake Hours"
                 : "Total Time";
-
           const value = document.createElement("div");
           value.className = "timer-value";
-
           let html = "";
-          for (let i = 0; i < 4; i++) {
+          for (let i = 0; i < 4; i++)
             html += `<div class="digit-group hours" id="group-${type}-h-${i}" data-value=" "><span id="${type}-h-${i}"> </span></div>`;
-          }
           html += '<span class="unit">h </span>';
-
-          for (let i = 0; i < 2; i++) {
+          for (let i = 0; i < 2; i++)
             html += `<div class="digit-group"><span id="${type}-m-${i}">0</span></div>`;
-          }
           html += '<span class="unit">m </span>';
-
-          for (let i = 0; i < 2; i++) {
+          for (let i = 0; i < 2; i++)
             html += `<div class="digit-group"><span id="${type}-s-${i}">0</span></div>`;
-          }
           html += '<span class="unit">s</span>';
-
           value.innerHTML = html;
           pill.appendChild(label);
           pill.appendChild(value);
           timerContainer.appendChild(pill);
         });
-
         timersInitialized = true;
       }
 
@@ -1256,10 +1194,8 @@
         if (from === to) return;
         const element = document.getElementById(elementId);
         if (!element || element.classList.contains("rolling-up")) return;
-
         element.dataset.newVal = to;
         element.classList.add("rolling-up");
-
         let animationFinished = false;
         const handleAnimationEnd = () => {
           if (animationFinished) return;
@@ -1268,7 +1204,6 @@
           element.classList.remove("rolling-up");
           element.removeAttribute("data-new-val");
         };
-
         element.addEventListener("animationend", handleAnimationEnd, {
           once: true,
         });
@@ -1297,7 +1232,6 @@
         const h = Math.floor(ms / (1000 * 60 * 60));
         const m = Math.floor((ms / (1000 * 60)) % 60);
         const s = Math.floor((ms / 1000) % 60);
-
         return {
           h: String(h).padStart(4, " ").split(""),
           m: pad(m).split(""),
@@ -1312,7 +1246,6 @@
           renderCal();
         }
 
-        // Dual Clocks (Using smart update)
         smartUpdateDOM(
           "clock-bkk",
           now.toLocaleTimeString("en-GB", { timeZone: "Asia/Bangkok" }),
@@ -1323,7 +1256,6 @@
         );
 
         const diffMs = TARGET_DATE_EXACT - now;
-
         if (diffMs <= 0) {
           smartUpdateDOM(
             "main-timer",
@@ -1341,11 +1273,9 @@
         initTimers();
 
         const currentHour = now.getHours();
-        if (currentHour >= 20 || currentHour < 6) {
+        if (currentHour >= 20 || currentHour < 6)
           document.body.classList.add("night-mode");
-        } else {
-          document.body.classList.remove("night-mode");
-        }
+        else document.body.classList.remove("night-mode");
 
         const totalDurationMs = TARGET_DATE_EXACT - START_DATE;
         const elapsedMs = now - START_DATE;
@@ -1402,7 +1332,6 @@
                   ? "🙂"
                   : "🥳";
         const sleepWord = sleeps === 1 ? "sleep" : "sleeps";
-
         document.title = `(${sleeps} Sleeps) Best Day Countdown`;
         smartUpdateDOM(
           "stat-sleeps",
@@ -1419,7 +1348,6 @@
           if (scanner.getDay() === 6) sats++;
         }
         thurs--;
-
         const thursWord = thurs === 1 ? "Thursday" : "Thursdays";
         const satsWord = sats === 1 ? "Weekend" : "Weekends";
         smartUpdateDOM(
@@ -1452,7 +1380,6 @@
           `<span style="font-size:1.5rem">📈</span> <span>${mileText}</span>`,
         );
 
-        // --- Stat: Arsenal Games ---
         let isLive = false;
         const upcomingGames = ARSENAL_GAMES.filter((gameStartTime) => {
           const gameEndTime = new Date(gameStartTime.getTime() + 105 * 60000);
@@ -1474,7 +1401,6 @@
         } else if (gamesLeft > 0) {
           if (arsenalCard.classList.contains("live-match"))
             arsenalCard.classList.remove("live-match");
-
           const nextGame = upcomingGames[0];
           const dayName = nextGame.toLocaleDateString("en-GB", {
             weekday: "short",
@@ -1483,7 +1409,6 @@
             hour: "2-digit",
             minute: "2-digit",
           });
-
           smartUpdateDOM(
             "stat-arsenal",
             `<div style="display:flex; flex-direction:column; align-items:center; line-height:1.2;">
@@ -1494,7 +1419,6 @@
              </div>`,
           );
         } else {
-          // The graceful "Zero Games" state! Keeps the two-line height so the grid stays perfectly symmetrical.
           if (arsenalCard.classList.contains("live-match"))
             arsenalCard.classList.remove("live-match");
           smartUpdateDOM(
@@ -1584,7 +1508,6 @@
           flightFill.style.width = "100%";
           flightPlane.classList.remove("is-flying");
 
-          // Fire a special blue and gold burst EXACTLY once when it lands
           if (!landingConfettiLaunched && diffMs > 0) {
             confetti({
               particleCount: 150,
@@ -1605,7 +1528,6 @@
         const totalDurationMs = TARGET_DATE_EXACT - START_DATE;
         const totalDays = Math.floor(totalDurationMs / (1000 * 60 * 60 * 24));
         const totalHours = Math.floor(totalDurationMs / (1000 * 60 * 60));
-
         const totalSleepMs = calculateTotalSleepMs(
           START_DATE,
           TARGET_DATE_EXACT,
@@ -1633,7 +1555,6 @@
         let totalSleep = 0;
         let current = new Date(start);
         current.setHours(0, 0, 0, 0);
-
         let safety = 0;
         while (current < end && safety < 5000) {
           let sleepStart = new Date(current);
@@ -1668,7 +1589,6 @@
         }, 250);
       }
 
-      // CLICK CONFETTI FEATURE
       document.addEventListener("click", (e) => {
         if (e.target.closest(".stat-card") || e.target.closest(".cal-cell")) {
           confetti({
@@ -1679,6 +1599,20 @@
               y: e.clientY / window.innerHeight,
             },
             colors: ["#ff6b6b", "#4ecdc4", "#f6ad55"],
+          });
+        }
+
+        if (e.target.closest(".status-icon-rocket")) {
+          // Trigger a special firey confetti burst
+          confetti({
+            particleCount: 40,
+            angle: 225, // Shoots backward from the rocket's nose
+            spread: 30,
+            origin: {
+              x: e.clientX / window.innerWidth,
+              y: e.clientY / window.innerHeight,
+            },
+            colors: ["#ff8008", "#ffc837", "#ffffff"],
           });
         }
       });
@@ -1711,29 +1645,53 @@
             (g) => g.toDateString() === cur.toDateString(),
           );
           let isFlightDay =
-            cur.toDateString() === FLIGHT_DEPARTURE.toDateString(); // Add this line!
+            cur.toDateString() === FLIGHT_DEPARTURE.toDateString();
 
+          // --- THE PLASMA TRAIL LOGIC ---
           if (isPast) {
             el.classList.add("past");
 
-            // Calculate a slight delay so the ticks animate in sequence
-            let daysFromStart = Math.round(
-              (cur - START_DATE) / (1000 * 60 * 60 * 24),
+            let todayMidnight = new Date().setHours(0, 0, 0, 0);
+            let daysFromToday = Math.round(
+              (todayMidnight - cur) / (1000 * 60 * 60 * 24),
             );
-            let staggerDelay = daysFromStart * 0.04;
 
-            let idleDelay = staggerDelay + 2;
+            // The tail cools down over 12 days. 1 = Yesterday (Hottest), 0 = 12+ days ago (Cold Ash)
+            let heatRatio = Math.max(0, 1 - (daysFromToday - 1) / 20);
+
+            // Color math! This spans perfectly from Blue Ash -> Purple -> Red -> Bright Yellow
+            let hue = 220 + heatRatio * 185;
+            let sat = 60 + heatRatio * 40;
+            // Drops the darkness: Cold end becomes a soft 70% lightness icy-blue
+            let light = 70 - heatRatio * 15;
+            // Drops the opacity: Cold end becomes much more transparent and glassy
+            let alpha = 0.15 + heatRatio * 0.85;
+
+            el.style.background = `hsla(${hue}, ${sat}%, ${light}%, ${alpha})`;
+
+            let glowSpread = 2 + heatRatio * 15;
+            let glowAlpha = 0.1 + heatRatio * 0.8;
+
+            // Outer heat glow + Inner hot core
+            el.style.boxShadow = `0 0 ${glowSpread}px hsla(${hue}, 100%, 60%, ${glowAlpha}), inset 0 0 ${5 + heatRatio * 10}px hsla(${hue}, 100%, 70%, ${glowAlpha})`;
+            el.style.border = `1px solid hsla(${hue}, 100%, 70%, ${0.2 + heatRatio * 0.6})`;
+
+            // Animation timing: Hottest = fast violent pulse, Coldest = slow breathing
+            let pulseDuration = 3.5 - heatRatio * 3.2;
+            let randomDelay = -(Math.random() * 5); // Desync the pulsing slightly
+
+            el.style.animation = `plasmaPulse ${pulseDuration}s infinite alternate ease-in-out ${randomDelay}s`;
 
             el.innerHTML = `
-              <svg class="check-mark-svg" style="animation: idlePop 6s ease-in-out infinite ${idleDelay}s" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12" style="animation-delay: ${staggerDelay}s"></polyline>
+              <svg class="plasma-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: ${0.3 + heatRatio * 0.7}">
+                <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
             `;
           } else if (isToday) {
             el.classList.add("today");
             el.innerHTML = isArsenal
               ? `<span class="date-num">${cur.getDate()}</span><span class="status-icon">⚽</span>`
-              : `<span class="date-num">${cur.getDate()}</span><span class="status-icon">🚀</span>`;
+              : `<span class="date-num">${cur.getDate()}</span><span class="status-icon-rocket">🚀</span>`;
           } else {
             el.innerHTML = `<span class="date-num">${cur.getDate()}</span>`;
             if (isArsenal) {
@@ -1747,7 +1705,7 @@
               el.classList.add("weekend");
             }
           }
-          // Add Smart Tooltips
+
           if (isArsenal) {
             const match = ARSENAL_GAMES.find(
               (g) => g.toDateString() === cur.toDateString(),
@@ -1761,6 +1719,7 @@
           } else if (isPast) {
             el.title = `✅ Day complete`;
           }
+
           grid.appendChild(el);
           cur.setDate(cur.getDate() + 1);
         }
@@ -1769,7 +1728,6 @@
       function tick() {
         update();
         setFavicon("⏳");
-
         requestAnimationFrame(tick);
       }
 
@@ -1784,13 +1742,9 @@
         link.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
       }
 
-      // --- 3D Hover Tilt Physics (Tuned for all cards) ---
       let hoveredCard = null;
-
       document.addEventListener("mousemove", (e) => {
         const targetCard = e.target.closest(".stat-card,  .timer-pill");
-
-        // Reset if we move off a card
         if (hoveredCard && hoveredCard !== targetCard) {
           hoveredCard.style.transition =
             "transform 0.4s ease-out, box-shadow 0.4s ease-out";
@@ -1798,8 +1752,6 @@
             "perspective(1500px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
           hoveredCard = null;
         }
-
-        // Apply physics if we are on a card
         if (targetCard) {
           hoveredCard = targetCard;
           const rect = targetCard.getBoundingClientRect();
@@ -1807,20 +1759,15 @@
           const y = e.clientY - rect.top;
           const centerX = rect.width / 2;
           const centerY = rect.height / 2;
-
-          // Tuned parameters depending on the card size
           let maxTilt = 8;
           let zoom = 1.03;
-
           const rotateX = ((y - centerY) / centerY) * -maxTilt;
           const rotateY = ((x - centerX) / centerX) * maxTilt;
-
           targetCard.style.transition = "none";
           targetCard.style.transform = `perspective(1500px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${zoom}, ${zoom}, ${zoom})`;
         }
       });
 
-      // Reset if mouse leaves the browser window entirely
       document.addEventListener("mouseleave", () => {
         if (hoveredCard) {
           hoveredCard.style.transition =
@@ -1837,4 +1784,3 @@
     </script>
   </body>
 </html>
-
