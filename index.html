@@ -955,12 +955,12 @@
         const timeInverse = 100 - timePct;
         document.getElementById("time-bar").style.width = timePct + "%";
         document.getElementById("time-percent").innerText =
-          timePct.toFixed(2) + "% (" + timeInverse.toFixed(2) + "%)";
+          timePct.toFixed(6) + "% (" + timeInverse.toFixed(6) + "%)";
 
         const dayInverse = 100 - dayPct;
         document.getElementById("day-bar").style.width = dayPct + "%";
         document.getElementById("day-percent").innerText =
-          dayPct.toFixed(6) + "% (" + dayInverse.toFixed(6) + "%)";
+          dayPct.toFixed(2) + "% (" + dayInverse.toFixed(2) + "%)";
 
         let sleeps = 0;
         let counter = new Date(now);
@@ -1227,5 +1227,6 @@
     </script>
   </body>
 </html>
+
 
 
