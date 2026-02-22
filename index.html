@@ -1383,23 +1383,19 @@
         };
       }
 
+      let lastMinuteUpdate = 0;
+      let lastDayUpdate = "";
+      let cachedWDays = 0;
+      let cachedLastDayWorkMs = 0;
+
       function update() {
         const now = new Date();
-        if (now.toDateString() !== today) {
-          today = now.toDateString();
-          renderCal();
-        }
-
-        smartUpdateDOM(
-          "clock-bkk",
-          now.toLocaleTimeString("en-GB", { timeZone: "Asia/Bangkok" }),
-        );
-        smartUpdateDOM(
-          "clock-lhr",
-          now.toLocaleTimeString("en-GB", { timeZone: "Europe/London" }),
-        );
-
+        const currentDayStr = now.toDateString();
         const diffMs = TARGET_DATE_EXACT - now;
+
+        // --------------------------------------------------------
+        // 1. MISSION COMPLETE CHECK (Runs instantly if time is up)
+        // --------------------------------------------------------
         if (diffMs <= 0) {
           smartUpdateDOM(
             "main-timer",
@@ -1411,36 +1407,275 @@
             confettiLaunched = true;
           }
           setFavicon("🎉");
-          return;
+          return; // Stops all other calculations
         }
 
         initTimers();
 
-        const currentHour = now.getHours();
-        if (currentHour >= 20 || currentHour < 6)
-          document.body.classList.add("night-mode");
-        else document.body.classList.remove("night-mode");
+        // --------------------------------------------------------
+        // 2. ONCE A DAY UPDATES (Midnight or first load)
+        // --------------------------------------------------------
+        if (currentDayStr !== lastDayUpdate) {
+          lastDayUpdate = currentDayStr;
+          renderCal(); // Re-draws the calendar elements
 
+          // Day Progress Bar
+          const nowMidnight = new Date(now);
+          nowMidnight.setHours(0, 0, 0, 0);
+          const totalDays = Math.round(
+            (TARGET_DATE_MATH - START_DATE) / (1000 * 60 * 60 * 24),
+          );
+          const daysPassed = Math.round(
+            (nowMidnight - START_DATE) / (1000 * 60 * 60 * 24),
+          );
+          const dayPct = Math.min(
+            100,
+            Math.max(0, (daysPassed / totalDays) * 100),
+          );
+          const dayInverse = 100 - dayPct;
+          document.getElementById("day-bar").style.width = dayPct + "%";
+          smartUpdateDOM(
+            "day-percent",
+            `<span class="pct-main">${dayPct.toFixed(2)}%</span><span class="pct-sub">(${dayInverse.toFixed(2)}%)</span>`,
+          );
+
+          // Sleeps Calculation (While loop - now only runs once a day!)
+          let sleeps = 0;
+          let counter = new Date(now);
+          counter.setHours(7, 0, 0, 0);
+          if (now.getTime() >= counter.getTime())
+            counter.setDate(counter.getDate() + 1);
+          while (counter < TARGET_DATE_EXACT) {
+            sleeps++;
+            counter.setDate(counter.getDate() + 1);
+          }
+          const sleepWord = sleeps === 1 ? "sleep" : "sleeps";
+          const mood = sleeps > 5 ? "😴" : "🔥";
+          const sleepCard = document.getElementById("stat-sleeps");
+          if (sleeps === 0) {
+            sleepCard.classList.add("completed");
+            smartUpdateDOM(
+              "stat-sleeps",
+              `<span>🎉</span> <span>NO MORE SLEEPS!</span>`,
+            );
+          } else {
+            sleepCard.classList.remove("completed");
+            smartUpdateDOM(
+              "stat-sleeps",
+              `<span>${mood}</span> <span>${sleeps} ${sleepWord} remaining!</span>`,
+            );
+          }
+
+          // Thursdays and Weekends (While loop - now only runs once a day!)
+          let thurs = 0,
+            weekends = 0;
+          let dayScanner = new Date(now);
+          while (dayScanner < TARGET_DATE_EXACT) {
+            if (dayScanner.getDay() === 4) thurs++;
+            if (dayScanner.getDay() === 6) weekends++;
+            dayScanner.setDate(dayScanner.getDate() + 1);
+          }
+          thurs = Math.max(0, thurs - 1);
+          const thursWord = thurs === 1 ? "Thursday" : "Thursdays";
+          const weekendsWord = weekends === 1 ? "weekend" : "weekends";
+          const weekendCard = document.getElementById("stat-weekends");
+          if (thurs <= 0 && weekends <= 0) {
+            weekendCard.classList.add("completed");
+            smartUpdateDOM(
+              "stat-weekends",
+              `<span>🥳</span><span>NO THURSDAYS OR WEEKENDS LEFT TO WAIT!</span>`,
+            );
+          } else {
+            weekendCard.classList.remove("completed");
+            smartUpdateDOM(
+              "stat-weekends",
+              `<span>📅</span> <span>${thurs} ${thursWord} & ${weekends} ${weekendsWord} left!</span>`,
+            );
+          }
+
+          // Cache Work Days Left (While loop - now only runs once a day!)
+          cachedWDays = 0;
+          let workScanner = new Date(now);
+          workScanner.setDate(workScanner.getDate() + 1);
+          workScanner.setHours(0, 0, 0, 0);
+          const finalDayStart = new Date(TARGET_DATE_EXACT);
+          finalDayStart.setHours(0, 0, 0, 0);
+          while (workScanner < finalDayStart) {
+            let day = workScanner.getDay();
+            if (day !== 0 && day !== 6) cachedWDays++;
+            workScanner.setDate(workScanner.getDate() + 1);
+          }
+
+          cachedLastDayWorkMs = 0;
+          const finalDate = new Date(TARGET_DATE_EXACT);
+          if (finalDate.getDay() !== 0 && finalDate.getDay() !== 6) {
+            const workStartOnFinalDay = new Date(finalDate);
+            workStartOnFinalDay.setHours(9, 0, 0, 0);
+            if (finalDate > workStartOnFinalDay)
+              cachedLastDayWorkMs = finalDate - workStartOnFinalDay;
+          }
+        }
+
+        // --------------------------------------------------------
+        // 3. ONCE A MINUTE UPDATES
+        // --------------------------------------------------------
+        if (
+          now.getTime() - lastMinuteUpdate >= 60000 ||
+          lastMinuteUpdate === 0
+        ) {
+          lastMinuteUpdate = now.getTime();
+
+          // Night mode check
+          const currentHour = now.getHours();
+          if (currentHour >= 20 || currentHour < 6)
+            document.body.classList.add("night-mode");
+          else document.body.classList.remove("night-mode");
+
+          // Hyper-drive check
+          if (diffMs < 24 * 60 * 60 * 1000)
+            document.body.classList.add("hyper-drive");
+          else document.body.classList.remove("hyper-drive");
+
+          const totalDurationMs = TARGET_DATE_EXACT - START_DATE;
+          const elapsedMs = now - START_DATE;
+          const timePct = Math.min(
+            100,
+            Math.max(0, (elapsedMs / totalDurationMs) * 100),
+          );
+
+          // Milestones
+          const milestones = [
+            { p: 0, t: "Started" },
+            { p: 10, t: "10% Complete" },
+            { p: 20, t: "20% Complete" },
+            { p: 25, t: "Quarter Way" },
+            { p: 30, t: "30% Complete" },
+            { p: 33, t: "Third of the Way" },
+            { p: 40, t: "40% Complete" },
+            { p: 50, t: "Midpoint" },
+            { p: 60, t: "60% Complete" },
+            { p: 70, t: "70% Complete" },
+            { p: 75, t: "Home Stretch" },
+            { p: 80, t: "80% Complete" },
+            { p: 90, t: "Almost There" },
+            { p: 100, t: "Complete" },
+          ];
+          let mileText = milestones[0].t;
+          milestones.forEach((m) => {
+            if (timePct >= m.p) mileText = m.t;
+          });
+          const mileCard = document.getElementById("stat-milestone");
+          if (timePct >= 100) {
+            mileCard.classList.add("completed");
+            smartUpdateDOM(
+              "stat-milestone",
+              `<span>🏆</span> <span>100% COMPLETE!</span>`,
+            );
+          } else {
+            mileCard.classList.remove("completed");
+            smartUpdateDOM(
+              "stat-milestone",
+              `<span>📈</span> <span>${mileText}</span>`,
+            );
+          }
+
+          // Arsenal Logic
+          const gamesLeft = ARSENAL_GAMES.filter((g) => g > now).length;
+          const isLive = ARSENAL_GAMES.some((g) => {
+            const end = new Date(g.getTime() + 105 * 60000); // 105 mins match
+            return now >= g && now <= end;
+          });
+          const gameWord = gamesLeft === 1 ? "game" : "games";
+          const arsenalCard = document.getElementById("stat-arsenal");
+          if (gamesLeft === 0 && !isLive) {
+            arsenalCard.classList.add("completed");
+            smartUpdateDOM(
+              "stat-arsenal",
+              `<span>🏁</span> <span>NO MORE MATCHES!</span>`,
+            );
+          } else if (isLive) {
+            arsenalCard.classList.add("live-match");
+            smartUpdateDOM(
+              "stat-arsenal",
+              `<span>🔴</span> <span>MATCH LIVE!</span>`,
+            );
+          } else {
+            arsenalCard.classList.remove("completed", "live-match");
+            smartUpdateDOM(
+              "stat-arsenal",
+              `<div style="display:flex; flex-direction:column; align-items:center;">
+          <div style="display:flex; align-items:center; gap:8px;"><span>⚽</span> <span>${gamesLeft} Arsenal ${gameWord} to go!</span></div>
+          <span style="font-size:0.65rem; opacity:0.8;">Next: Sun @ 16:30</span>
+        </div>`,
+            );
+          }
+
+          // Flight Tracker Logic
+          const flightStatus = document.getElementById("flight-status");
+          const flightPlane = document.getElementById("flight-plane");
+          const flightFill = document.getElementById("flight-progress-fill");
+
+          if (now < FLIGHT_DEPARTURE) {
+            smartUpdateDOM(
+              "flight-status",
+              "Scheduled: Departs Tuesday at 06:20 GMT",
+            );
+            flightPlane.style.left = "0%";
+            flightFill.style.width = "0%";
+            flightPlane.classList.remove("is-flying");
+          } else if (now >= FLIGHT_DEPARTURE && now <= FLIGHT_ARRIVAL) {
+            const flightTotal = FLIGHT_ARRIVAL - FLIGHT_DEPARTURE;
+            const flightElapsed = now - FLIGHT_DEPARTURE;
+            const flightPct = Math.min(
+              100,
+              Math.max(0, (flightElapsed / flightTotal) * 100),
+            );
+
+            smartUpdateDOM(
+              "flight-status",
+              `🛫 In the air! ${flightPct.toFixed(1)}% of the way to London!`,
+            );
+            flightPlane.style.left = flightPct + "%";
+            flightFill.style.width = flightPct + "%";
+            flightPlane.classList.add("is-flying");
+            // setFavicon("✈️") removed from here to prevent mobile lag; handled by the optimized setFavicon function if needed.
+          } else {
+            smartUpdateDOM("flight-status", "🛬 Landed! She's home!");
+            flightPlane.style.left = "100%";
+            flightFill.style.width = "100%";
+            flightPlane.classList.remove("is-flying");
+
+            if (!landingConfettiLaunched && diffMs > 0) {
+              confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.6 },
+                colors: ["#ff8008", "#63b3ed", "#ffffff"],
+              });
+              landingConfettiLaunched = true;
+            }
+          }
+        }
+
+        // --------------------------------------------------------
+        // 4. EVERY SECOND UPDATES (High Frequency / Visuals)
+        // --------------------------------------------------------
+        smartUpdateDOM(
+          "clock-bkk",
+          now.toLocaleTimeString("en-GB", { timeZone: "Asia/Bangkok" }),
+        );
+        smartUpdateDOM(
+          "clock-lhr",
+          now.toLocaleTimeString("en-GB", { timeZone: "Europe/London" }),
+        );
+
+        // Time Progress Bar (Kept here because the 5 decimal places change constantly)
         const totalDurationMs = TARGET_DATE_EXACT - START_DATE;
         const elapsedMs = now - START_DATE;
         const timePct = Math.min(
           100,
           Math.max(0, (elapsedMs / totalDurationMs) * 100),
         );
-
-        const nowMidnight = new Date(now);
-        nowMidnight.setHours(0, 0, 0, 0);
-        const totalDays = Math.round(
-          (TARGET_DATE_MATH - START_DATE) / (1000 * 60 * 60 * 24),
-        );
-        const daysPassed = Math.round(
-          (nowMidnight - START_DATE) / (1000 * 60 * 60 * 24),
-        );
-        const dayPct = Math.min(
-          100,
-          Math.max(0, (daysPassed / totalDays) * 100),
-        );
-
         const timeInverse = 100 - timePct;
         document.getElementById("time-bar").style.width = timePct + "%";
         smartUpdateDOM(
@@ -1448,158 +1683,11 @@
           `<span class="pct-main">${timePct.toFixed(5)}%</span><span class="pct-sub">(${timeInverse.toFixed(5)}%)</span>`,
         );
 
-        const dayInverse = 100 - dayPct;
-        document.getElementById("day-bar").style.width = dayPct + "%";
-        smartUpdateDOM(
-          "day-percent",
-          `<span class="pct-main">${dayPct.toFixed(2)}%</span><span class="pct-sub">(${dayInverse.toFixed(2)}%)</span>`,
-        );
-
-        let sleeps = 0;
-        let counter = new Date(now);
-        counter.setHours(7, 0, 0, 0);
-        if (now.getTime() >= counter.getTime())
-          counter.setDate(counter.getDate() + 1);
-        while (counter < TARGET_DATE_EXACT) {
-          sleeps++;
-          counter.setDate(counter.getDate() + 1);
-        }
-
-        const sleepWord = sleeps === 1 ? "sleep" : "sleeps";
-        const mood = sleeps > 5 ? "😴" : "🔥";
-
-        // Calculate Thursdays and Saturdays remaining
-        let thurs = 0,
-          weekends = 0;
-        let dayScanner = new Date(now);
-        while (dayScanner < TARGET_DATE_EXACT) {
-          if (dayScanner.getDay() === 4) thurs++;
-          if (dayScanner.getDay() === 6) weekends++;
-          dayScanner.setDate(dayScanner.getDate() + 1);
-        }
-        thurs--;
-        const thursWord = thurs === 1 ? "Thursday" : "Thursdays";
-        const weekendsWord = weekends === 1 ? "weekend" : "weekends";
-
-        // Milestone text
-        const milestones = [
-          { p: 0, t: "Started" },
-          { p: 10, t: "10% Complete" },
-          { p: 20, t: "20% Complete" },
-          { p: 25, t: "Quarter Way" },
-          { p: 30, t: "30% Complete" },
-          { p: 33, t: "Third of the Way" },
-          { p: 40, t: "40% Complete" },
-          { p: 50, t: "Midpoint" },
-          { p: 60, t: "60% Complete" },
-          { p: 70, t: "70% Complete" },
-          { p: 75, t: "Home Stretch" },
-          { p: 80, t: "80% Complete" },
-          { p: 90, t: "Almost There" },
-          { p: 100, t: "Complete" },
-        ];
-
-        let mileText = milestones[0].t;
-        milestones.forEach((m) => {
-          if (timePct >= m.p) mileText = m.t;
-        });
-
-        // Arsenal logic
-        const gamesLeft = ARSENAL_GAMES.filter((g) => g > now).length;
-        const isLive = ARSENAL_GAMES.some((g) => {
-          const end = new Date(g.getTime() + 105 * 60000); // Assume 105 mins match
-          return now >= g && now <= end;
-        });
-        const gameWord = gamesLeft === 1 ? "game" : "games";
-
-        // 1. Sleeps Logic
-        const sleepCard = document.getElementById("stat-sleeps");
-        if (sleeps === 0) {
-          sleepCard.classList.add("completed");
-          smartUpdateDOM(
-            "stat-sleeps",
-            `<span>🎉</span> <span>NO MORE SLEEPS!</span>`,
-          );
-        } else {
-          sleepCard.classList.remove("completed");
-          smartUpdateDOM(
-            "stat-sleeps",
-            `<span>${mood}</span> <span>${sleeps} ${sleepWord} remaining!</span>`,
-          );
-        }
-
-        // 2. Weekends Logic
-        const weekendCard = document.getElementById("stat-weekends");
-        if (thurs <= 0 && weekends <= 0) {
-          weekendCard.classList.add("completed");
-          smartUpdateDOM(
-            "stat-weekends",
-            `<span>🥳</span><span>NO THURSDAYS OR WEEKENDS LEFT TO WAIT!</span>`,
-          );
-        } else {
-          weekendCard.classList.remove("completed");
-          smartUpdateDOM(
-            "stat-weekends",
-            `<span>📅</span> <span>${thurs} ${thursWord} & ${weekends} ${weekendsWord} left!</span>`,
-          );
-        }
-
-        // 3. Milestone Logic
-        const mileCard = document.getElementById("stat-milestone");
-        if (timePct >= 100) {
-          mileCard.classList.add("completed");
-          smartUpdateDOM(
-            "stat-milestone",
-            `<span>🏆</span> <span>100% COMPLETE!</span>`,
-          );
-        } else {
-          mileCard.classList.remove("completed");
-          smartUpdateDOM(
-            "stat-milestone",
-            `<span>📈</span> <span>${mileText}</span>`,
-          );
-        }
-
-        // 4. Arsenal Logic
-        const arsenalCard = document.getElementById("stat-arsenal");
-        if (gamesLeft === 0 && !isLive) {
-          arsenalCard.classList.add("completed");
-          smartUpdateDOM(
-            "stat-arsenal",
-            `<span>🏁</span> <span>NO MORE MATCHES!</span>`,
-          );
-        } else if (isLive) {
-          arsenalCard.classList.add("live-match");
-          smartUpdateDOM(
-            "stat-arsenal",
-            `<span>🔴</span> <span>MATCH LIVE!</span>`,
-          );
-        } else {
-          arsenalCard.classList.remove("completed", "live-match");
-          smartUpdateDOM(
-            "stat-arsenal",
-            `<div style="display:flex; flex-direction:column; align-items:center;">
-                <div style="display:flex; align-items:center; gap:8px;"><span>⚽</span> <span>${gamesLeft} Arsenal ${gameWord} to go!</span></div>
-                <span style="font-size:0.65rem; opacity:0.8;">Next: Sun @ 16:30</span></div>`,
-          );
-        }
-
+        // Awake Time
         const totalSleepMs = calculateTotalSleepMs(now, TARGET_DATE_EXACT);
         const awakeMs = diffMs > totalSleepMs ? diffMs - totalSleepMs : 0;
 
-        let wDays = 0;
-        let workScanner = new Date(now);
-        workScanner.setDate(workScanner.getDate() + 1);
-        workScanner.setHours(0, 0, 0, 0);
-        const finalDayStart = new Date(TARGET_DATE_EXACT);
-        finalDayStart.setHours(0, 0, 0, 0);
-
-        while (workScanner < finalDayStart) {
-          let day = workScanner.getDay();
-          if (day !== 0 && day !== 6) wDays++;
-          workScanner.setDate(workScanner.getDate() + 1);
-        }
-
+        // Work Time (Uses the cachedWDays and cachedLastDayWorkMs from the Daily bucket!)
         let todayWorkMs = 0;
         if (now.getDay() !== 0 && now.getDay() !== 6) {
           const workStart = new Date(now);
@@ -1610,70 +1698,13 @@
           else if (now >= workStart && now < workEnd)
             todayWorkMs = workEnd - now;
         }
+        const workMs =
+          cachedWDays * 8.5 * 3600 * 1000 + todayWorkMs + cachedLastDayWorkMs;
 
-        let lastDayWorkMs = 0;
-        const finalDate = new Date(TARGET_DATE_EXACT);
-        if (finalDate.getDay() !== 0 && finalDate.getDay() !== 6) {
-          const workStartOnFinalDay = new Date(finalDate);
-          workStartOnFinalDay.setHours(9, 0, 0, 0);
-          if (finalDate > workStartOnFinalDay)
-            lastDayWorkMs = finalDate - workStartOnFinalDay;
-        }
-
-        const workMs = wDays * 8.5 * 3600 * 1000 + todayWorkMs + lastDayWorkMs;
-
+        // Dispatch digits to timers
         updateTimer("work", msToTimeDigits(workMs));
         updateTimer("awake", msToTimeDigits(awakeMs));
         updateTimer("total", msToTimeDigits(diffMs));
-
-        const flightStatus = document.getElementById("flight-status");
-        const flightPlane = document.getElementById("flight-plane");
-        const flightFill = document.getElementById("flight-progress-fill");
-
-        if (now < FLIGHT_DEPARTURE) {
-          smartUpdateDOM(
-            "flight-status",
-            "Scheduled: Departs Tuesday at 06:20 GMT",
-          );
-          flightPlane.style.left = "0%";
-          flightFill.style.width = "0%";
-          flightPlane.classList.remove("is-flying");
-        } else if (now >= FLIGHT_DEPARTURE && now <= FLIGHT_ARRIVAL) {
-          const flightTotal = FLIGHT_ARRIVAL - FLIGHT_DEPARTURE;
-          const flightElapsed = now - FLIGHT_DEPARTURE;
-          const flightPct = Math.min(
-            100,
-            Math.max(0, (flightElapsed / flightTotal) * 100),
-          );
-
-          smartUpdateDOM(
-            "flight-status",
-            `🛫 In the air! ${flightPct.toFixed(1)}% of the way to London!`,
-          );
-          flightPlane.style.left = flightPct + "%";
-          flightFill.style.width = flightPct + "%";
-          flightPlane.classList.add("is-flying");
-          setFavicon("✈️");
-        } else {
-          smartUpdateDOM("flight-status", "🛬 Landed! She's home!");
-          flightPlane.style.left = "100%";
-          flightFill.style.width = "100%";
-          flightPlane.classList.remove("is-flying");
-
-          if (!landingConfettiLaunched && diffMs > 0) {
-            confetti({
-              particleCount: 150,
-              spread: 100,
-              origin: { y: 0.6 },
-              colors: ["#ff8008", "#63b3ed", "#ffffff"],
-            });
-            landingConfettiLaunched = true;
-          }
-        }
-
-        if (diffMs < 24 * 60 * 60 * 1000)
-          document.body.classList.add("hyper-drive");
-        else document.body.classList.remove("hyper-drive");
       }
 
       function setTotalDuration() {
@@ -1704,24 +1735,32 @@
       }
 
       function calculateTotalSleepMs(start, end) {
-        let totalSleep = 0;
-        let current = new Date(start);
-        current.setHours(0, 0, 0, 0);
-        let safety = 0;
-        while (current < end && safety < 5000) {
-          let sleepStart = new Date(current);
-          sleepStart.setHours(23);
-          let sleepEnd = new Date(current);
-          sleepEnd.setDate(sleepEnd.getDate() + 1);
-          sleepEnd.setHours(7);
-          const overlap_start = Math.max(start.getTime(), sleepStart.getTime());
-          const overlap_end = Math.min(end.getTime(), sleepEnd.getTime());
-          if (overlap_end > overlap_start)
-            totalSleep += overlap_end - overlap_start;
-          current.setDate(current.getDate() + 1);
-          safety++;
-        }
-        return totalSleep;
+        // 1. Shift both times forward by 1 hour (3,600,000 ms).
+        // This maps the 23:00 - 07:00 sleep schedule to a clean 00:00 - 08:00 schedule!
+        const s1 = new Date(start.getTime() + 3600000);
+        const s2 = new Date(end.getTime() + 3600000);
+
+        // 2. Get the local midnight for both shifted dates
+        const mid1 = new Date(s1);
+        mid1.setHours(0, 0, 0, 0);
+
+        const mid2 = new Date(s2);
+        mid2.setHours(0, 0, 0, 0);
+
+        // 3. Calculate full calendar days between the two midnights
+        const fullDays = Math.round((mid2 - mid1) / 86400000);
+        const fullDaysSleep = fullDays * 8 * 3600 * 1000; // 8 hours per day
+
+        // 4. Calculate sleep that passed BEFORE our start time on the first day
+        const msSinceMid1 = s1 - mid1;
+        const sleepUsedInFirstDay = Math.min(msSinceMid1, 8 * 3600 * 1000);
+
+        // 5. Calculate sleep that happened on the final partial day
+        const msSinceMid2 = s2 - mid2;
+        const sleepInLastDay = Math.min(msSinceMid2, 8 * 3600 * 1000);
+
+        // Total = (All sleep in full days) - (Sleep missed on day 1) + (Sleep acquired on last day)
+        return fullDaysSleep - sleepUsedInFirstDay + sleepInLastDay;
       }
 
       function launchConfetti() {
@@ -1897,7 +1936,12 @@
         requestAnimationFrame(tick);
       }
 
+      let currentFavicon = null;
+
       function setFavicon(emoji) {
+        if (currentFavicon === emoji) return; // Instantly stops the lag
+        currentFavicon = emoji;
+
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${emoji}</text></svg>`;
         let link = document.querySelector("link[rel~='icon']");
         if (!link) {
