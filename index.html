@@ -1137,42 +1137,100 @@
       }
 
       @media (max-width: 650px) {
-        /* 1. The Frosted Glass Killer (This is the #1 fix) */
+        /* 1. THE SILENT KILLER: Keep frosted glass OFF. 
+     (This is the one compromise we have to make, but you won't miss it) */
         .dashboard {
           backdrop-filter: none !important;
           -webkit-backdrop-filter: none !important;
-          background: rgba(255, 255, 255, 0.98) !important;
+          background: rgba(255, 255, 255, 0.95) !important;
         }
         body.night-mode .dashboard {
-          background: rgba(20, 25, 40, 0.98) !important;
+          background: rgba(20, 25, 40, 0.95) !important;
         }
 
-        /* 2. The SVG Drop-Shadow Killer (Massive savings on the calendar) */
-        /* The idlePop animation uses animated drop-shadows which melts mobile GPUs */
-        .plasma-check {
-          filter: none !important;
-          animation: none !important;
-          transform: scale(1.2); /* Keep it slightly enlarged statically */
-        }
-
-        /* 3. The Brightness Pulse Killer */
-        /* Animating filter: brightness() on 20+ cells at once is too heavy */
+        /* 2. BRING BACK THE PLASMA BREATHING */
+        /* We overwrite the JavaScript's heavy box-shadow with a buttery-smooth scale and fade */
         .cal-cell.past {
-          animation: none !important;
+          animation: gpuPlasmaPulse 2.5s infinite alternate ease-in-out !important;
+        }
+        @keyframes gpuPlasmaPulse {
+          0% {
+            transform: scale(0.96);
+            opacity: 0.7;
+          }
+          100% {
+            transform: scale(1.04);
+            opacity: 1;
+          }
         }
 
-        /* 4. The Rocket Shadow Blur Killer */
-        .status-icon-rocket::before,
-        .status-icon-rocket::after {
+        /* 3. BRING BACK THE "MEXICAN WAVE" POP */
+        /* We keep the wild jumping animation, but remove the glowing drop-shadow that melted the phone */
+        .plasma-check {
+          animation: gpuIdlePop 6s ease-in-out infinite !important;
           filter: none !important;
-          animation: none !important;
+        }
+        @keyframes gpuIdlePop {
+          0%,
+          80%,
+          100% {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+          }
+          85% {
+            transform: scale(1.7) rotate(10deg);
+            opacity: 0.7;
+          }
+          90% {
+            transform: scale(0.8) rotate(-5deg);
+            opacity: 1;
+          }
+          95% {
+            transform: scale(1.1);
+          }
         }
 
-        /* 5. Static flight tracker */
-        .flight-plane.is-flying::before,
-        .flight-plane.is-flying::after {
+        /* 4. BRING BACK THE ROCKET & PLANE BOBBING */
+        /* The bobbing (transform: translateY) is totally safe! We just kill the blurry shadows underneath them */
+        .status-icon-rocket {
+          animation: rocketBob 2s ease-in-out infinite !important;
+        }
+        .status-icon-rocket::before {
+          display: none !important;
+        } /* Kills rocket shadow */
+
+        .flight-plane.is-flying {
+          animation: flightBob 2.5s ease-in-out infinite !important;
+        }
+        .flight-plane.is-flying::before {
+          display: none !important;
+        } /* Kills plane shadow */
+
+        /* 5. BRING BACK THE "TODAY" PULSE */
+        /* Instead of a heavy glowing shadow, we use a hardware-accelerated expanding ring */
+        .cal-cell.today {
+          border: 3px solid var(--best-day-gold) !important;
+          box-shadow: none !important;
           animation: none !important;
-          filter: none !important;
+        }
+        .cal-cell.today::after {
+          content: "";
+          position: absolute;
+          inset: -3px; /* Matches the border size */
+          border-radius: 12px;
+          border: 3px solid var(--best-day-gold);
+          animation: gpuRingPulse 2s infinite ease-out;
+          pointer-events: none;
+        }
+        @keyframes gpuRingPulse {
+          0% {
+            transform: scale(1);
+            opacity: 0.8;
+          }
+          100% {
+            transform: scale(1.4);
+            opacity: 0;
+          }
         }
       }
 
