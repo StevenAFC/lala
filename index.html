@@ -1425,7 +1425,7 @@
         document.getElementById("time-bar").style.width = timePct + "%";
         smartUpdateDOM(
           "time-percent",
-          `<span class="pct-main">${timePct.toFixed(6)}%</span><span class="pct-sub">(${timeInverse.toFixed(6)}%)</span>`,
+          `<span class="pct-main">${timePct.toFixed(5)}%</span><span class="pct-sub">(${timeInverse.toFixed(5)}%)</span>`,
         );
 
         const dayInverse = 100 - dayPct;
@@ -1926,4 +1926,5 @@
     </script>
   </body>
 </html>
+
 
