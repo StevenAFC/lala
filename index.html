@@ -1097,6 +1097,26 @@
         }
       }
 
+      @media (max-width: 650px) {
+        /* Reduce blur on mobile for massive GPU savings */
+        .dashboard {
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+        }
+
+        /* Simplify the background gradient animation on mobile */
+        body {
+          animation: none;
+          background-size: 100% 100%;
+        }
+
+        /* Disable the heavy shimmer effect on mobile */
+        .stat-card::after {
+          animation: none;
+          display: none;
+        }
+      }
+
       .dual-clocks {
         display: flex;
         justify-content: center;
