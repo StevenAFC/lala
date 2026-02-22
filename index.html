@@ -1117,6 +1117,25 @@
         }
       }
 
+      @media (max-width: 650px) {
+        body {
+          /* Kill the heavy 60fps animation */
+          animation: none !important;
+
+          /* Replace the massive 400% background map with a simple, static gradient */
+          background: linear-gradient(
+            135deg,
+            #2c3e50 0%,
+            #4ca1af 100%
+          ) !important;
+        }
+
+        /* If you added the pseudo-element fix from the last step, nuke it here */
+        body::before {
+          display: none !important;
+        }
+      }
+
       .dual-clocks {
         display: flex;
         justify-content: center;
