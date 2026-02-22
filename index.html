@@ -1867,9 +1867,13 @@
         }
       }
 
+      let lastTick = 0;
+
       function tick() {
-        update();
-        setFavicon("⏳");
+        if (!lastTick || timestamp - lastTick >= 1000) {
+          update();
+          setFavicon("⏳");
+        }
         requestAnimationFrame(tick);
       }
 
@@ -1926,5 +1930,3 @@
     </script>
   </body>
 </html>
-
-
